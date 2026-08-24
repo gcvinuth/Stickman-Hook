@@ -1,862 +1,612 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#208b98">
-<meta name="description" content="Stickman Hook - Fast-paced physics swinging arcade PWA game">
-<!-- Apple PWA Meta Tags -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Stickman Hook">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23208b98'><circle cx='50' cy='50' r='50'/><circle cx='50' cy='30' r='12' fill='%23fff'/><path d='M50 42 L50 75 M50 55 L30 40 M50 55 L70 40 M50 75 L35 95 M50 75 L65 95' stroke='%23fff' stroke-width='6' stroke-linecap='round'/></svg>">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Stickman Hook</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Montserrat:wght@700;800;900&display=swap');
 
-<title>Stickman Hook PWA</title>
+    :root {
+      --bg-sky-top: #208b98;
+      --bg-sky-bottom: #4eb5a7;
+      --modal-bg: #141824;
+      --modal-card-bg: #1d2232;
+      --accent-green: #25d366;
+      --accent-green-glow: #1fb854;
+      --accent-blue: #2a82e4;
+      --accent-blue-glow: #1a6fd4;
+      --gold-star: #ffca28;
+    }
 
-<!-- Dynamic PWA Manifest Placeholder -->
-<link rel="manifest" id="manifest-link">
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-<style>
-  :root {
-    --bg-theme: #208b98;
-    --ui-white: #ffffff;
-    --ui-dark: #333333;
-    --accent-green: #4cd964;
-    --accent-blue: #007aff;
-  }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0d111a;
+      font-family: 'Fredoka', sans-serif;
+    }
 
-  * {
-    box-sizing: border-box;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
+    #app-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, var(--bg-sky-top) 0%, var(--bg-sky-bottom) 100%);
+    }
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: #1a1a1a;
-    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
-  }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
 
-  #game-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+    .screen-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      background: radial-gradient(circle at center, rgba(32, 139, 152, 0.4) 0%, rgba(13, 17, 26, 0.85) 100%);
+      backdrop-filter: blur(8px);
+    }
 
-  canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    touch-action: none;
-  }
+    .screen-overlay.hidden-screen {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.04);
+    }
 
-  /* TOP UI OVERLAY */
-  #top-ui {
-    position: absolute;
-    top: 20px;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 24px;
-    z-index: 10;
-    pointer-events: none;
-  }
+    /* Animated Logo Header */
+    .game-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 3.5rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(180deg, #3ee4b7 0%, #208b98 50%, #15626c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 6px 0px rgba(0, 0, 0, 0.35));
+      text-shadow: 0 0 20px rgba(62, 228, 183, 0.4);
+      animation: floatLogo 3s ease-in-out infinite alternate;
+    }
 
-  .ui-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+    @keyframes floatLogo {
+      0% { transform: translateY(0px) rotate(-1deg); }
+      100% { transform: translateY(-10px) rotate(1deg); }
+    }
 
-  .ui-btn {
-    width: 44px;
-    height: 44px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    pointer-events: auto;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    transition: transform 0.15s ease, background-color 0.15s;
-    border: none;
-  }
+    .btn-3d {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-radius: 16px;
+      padding: 16px 36px;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3), 0 12px 20px rgba(0, 0, 0, 0.25);
+    }
 
-  .ui-btn:active {
-    transform: scale(0.9);
-  }
+    .btn-3d:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
 
-  .ui-btn svg {
-    width: 22px;
-    height: 22px;
-    fill: #333;
-  }
+    .btn-green {
+      background: linear-gradient(180deg, #38ef7d 0%, #11998e 100%);
+      border: 3px solid #82ffa1;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
 
-  .ui-btn.pwa-badge {
-    position: relative;
-  }
+    .btn-blue {
+      background: linear-gradient(180deg, #3a7bd5 0%, #3a6073 100%);
+      border: 3px solid #7bc6ff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
 
-  .ui-btn.pwa-badge::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 10px;
-    height: 10px;
-    background: var(--accent-green);
-    border-radius: 50%;
-    border: 2px solid #fff;
-  }
+    #level-modal-container {
+      width: 92%;
+      max-width: 860px;
+      background: #141824;
+      border: 3px solid #232a3d;
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(32, 139, 152, 0.25);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-  /* Level Progress Bar */
-  #progress-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(0, 0, 0, 0.25);
-    padding: 8px 18px;
-    border-radius: 30px;
-    backdrop-filter: blur(6px);
-    pointer-events: auto;
-  }
+    .modal-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      margin-bottom: 14px;
+    }
 
-  .level-num {
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 18px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
+    .modal-header .title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      color: #38ef7d;
+      background: linear-gradient(180deg, #3ceb8b 0%, #1aa670 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 3px 0 rgba(0,0,0,0.4));
+    }
 
-  #progress-bar-bg {
-    position: relative;
-    width: 130px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.35);
-    border-radius: 4px;
-    overflow: visible;
-  }
+    .modal-header .stats-line {
+      color: #9aa8c7;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-top: 2px;
+    }
 
-  #progress-bar-fill {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 0%;
-    background: #ffffff;
-    border-radius: 4px;
-    transition: width 0.1s linear;
-  }
+    .close-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      color: #8fa0c0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
 
-  #progress-player-dot {
-    position: absolute;
-    top: 50%;
-    left: 0%;
-    width: 16px;
-    height: 16px;
-    background: #ffffff;
-    border: 3px solid #333333;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    transition: left 0.1s linear;
-  }
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      transform: scale(1.05);
+    }
 
-  /* Instruction Hint Overlay */
-  #instruction-hint {
-    position: absolute;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.4);
-    color: #ffffff;
-    padding: 10px 22px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 1px;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
-    backdrop-filter: blur(4px);
-  }
+    .world-tabs-container {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
+      scrollbar-width: none;
+    }
 
-  /* MODALS & OVERLAYS */
-  .modal-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(8px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 20;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
+    .world-tabs-container::-webkit-scrollbar {
+      display: none;
+    }
 
-  .modal-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
+    .world-tab-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 10px 14px;
+      background: #1d2334;
+      border: 2px solid #2d364f;
+      border-radius: 20px;
+      color: #8ea1c8;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
 
-  .modal-card {
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 28px;
-    width: 88%;
-    max-width: 440px;
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 16px 36px rgba(0,0,0,0.3);
-    transform: translateY(20px);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    overflow: hidden;
-  }
+    .world-tab-btn.active-tab {
+      background: #142a30;
+      border-color: #38ef7d;
+      color: #38ef7d;
+      box-shadow: 0 0 15px rgba(56, 239, 125, 0.25);
+    }
 
-  .modal-overlay.active .modal-card {
-    transform: translateY(0);
-  }
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
 
-  .modal-title {
-    font-size: 24px;
-    font-weight: 900;
-    color: #222;
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-align: center;
-  }
+    @media (max-width: 640px) {
+      .level-grid {
+        gap: 10px;
+      }
+      .modal-header .title {
+        font-size: 1.6rem;
+      }
+    }
 
-  .modal-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 18px;
-    font-weight: 600;
-    text-align: center;
-  }
+    .level-node-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
 
-  .primary-btn {
-    width: 100%;
-    padding: 14px 20px;
-    background: var(--accent-green);
-    border: none;
-    border-radius: 14px;
-    color: #ffffff;
-    font-size: 17px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 6px 16px rgba(76, 217, 100, 0.4);
-    transition: transform 0.15s ease, background 0.15s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-  }
+    .level-circle {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-  .primary-btn:active {
-    transform: scale(0.96);
-  }
+    @media (max-width: 640px) {
+      .level-circle {
+        width: 60px;
+        height: 60px;
+      }
+    }
 
-  .secondary-btn {
-    width: 100%;
-    padding: 12px 18px;
-    background: #e5e5ea;
-    border: none;
-    border-radius: 12px;
-    color: #333;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.15s;
-  }
+    /* Unlocked / Current Node Styling */
+    .level-circle.current-node {
+      background: linear-gradient(145deg, #3a97ff 0%, #0056cf 100%);
+      border: 4px solid #ffffff;
+      box-shadow: 0 0 25px rgba(58, 151, 255, 0.95), 0 0 10px rgba(255, 255, 255, 0.8);
+      animation: pulseGlow 2s infinite alternate;
+    }
 
-  .secondary-btn:hover {
-    background: #d1d1d6;
-  }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 18px rgba(58, 151, 255, 0.7); }
+      100% { box-shadow: 0 0 30px rgba(58, 151, 255, 1), 0 0 12px rgba(255, 255, 255, 0.9); }
+    }
 
-  /* Level Select Grid */
-  .level-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-    max-height: 260px;
-    overflow-y: auto;
-    padding: 6px;
-  }
+    .level-circle.unlocked-node {
+      background: linear-gradient(145deg, #2b334a 0%, #1e2436 100%);
+      border: 3px solid #3e4c6e;
+    }
 
-  .level-node {
-    aspect-ratio: 1;
-    background: #f0f0f5;
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-weight: 800;
-    font-size: 15px;
-    color: #444;
-    cursor: pointer;
-    transition: transform 0.15s, background 0.15s;
-    border: 2px solid transparent;
-  }
+    .level-circle.locked-node {
+      background: linear-gradient(145deg, #d8dce8 0%, #b8becf 100%);
+      border: 3px solid #eef2fd;
+      opacity: 0.95;
+    }
 
-  .level-node.current {
-    background: #208b98;
-    color: #fff;
-    box-shadow: 0 4px 10px rgba(32, 139, 152, 0.4);
-    border-color: #ffffff;
-  }
+    .level-circle .level-num-text {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 2rem;
+      line-height: 1;
+    }
 
-  .level-node .diff-indicator {
-    font-size: 9px;
-    font-weight: 600;
-    opacity: 0.75;
-    margin-top: 2px;
-  }
+    @media (max-width: 640px) {
+      .level-circle .level-num-text {
+        font-size: 1.4rem;
+      }
+    }
 
-  .level-node:active {
-    transform: scale(0.9);
-  }
+    .level-circle.current-node .level-num-text {
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
 
-  /* Level Title Banner Overlay */
-  #level-banner {
-    position: absolute;
-    top: 22%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 42px;
-    font-weight: 900;
-    color: #ffffff;
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    letter-spacing: 2px;
-    z-index: 12;
-    text-transform: uppercase;
-  }
-  #level-banner.show {
-    opacity: 1;
-    transform: translate(-50%, -60%);
-  }
+    .level-circle.locked-node .level-num-text {
+      color: #4e5872;
+    }
 
-  /* PWA Code Viewer Tabs */
-  .pwa-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 8px;
-  }
+    .level-circle .stars-row {
+      display: flex;
+      gap: 2px;
+      margin-top: 2px;
+    }
 
-  .pwa-tab-btn {
-    flex: 1;
-    padding: 8px 12px;
-    border: none;
-    background: #f0f0f5;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 13px;
-    color: #555;
-    cursor: pointer;
-  }
+    .level-circle .star-icon {
+      font-size: 11px;
+      color: #9ba6be;
+    }
 
-  .pwa-tab-btn.active {
-    background: var(--accent-blue);
-    color: #fff;
-  }
+    .level-circle.current-node .star-icon.filled {
+      color: #ffea00;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+    }
 
-  .code-container {
-    background: #1e1e1e;
-    color: #d4d4d4;
-    border-radius: 12px;
-    padding: 12px;
-    font-family: monospace;
-    font-size: 11px;
-    line-height: 1.4;
-    height: 200px;
-    overflow: auto;
-    text-align: left;
-    white-space: pre-wrap;
-    margin-bottom: 14px;
-  }
+    .level-circle.locked-node .star-icon {
+      color: #79849e;
+    }
 
-  .code-actions {
-    display: flex;
-    gap: 10px;
-  }
+    .level-circle .lock-icn {
+      width: 18px;
+      height: 18px;
+      fill: #4e5872;
+      margin-bottom: -2px;
+    }
 
-  /* DEDICATED FULLSCREEN LEVEL MENU SCREEN */
-  #menu-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, #1a1c29 0%, #10121a 100%);
-    z-index: 30;
-    display: flex;
-    flex-direction: column;
-    padding: 24px 20px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #ffffff;
-    overflow-y: auto;
-  }
+    .level-node-label {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
 
-  #menu-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
+    .level-node-label.lbl-current {
+      color: #ffffff;
+    }
 
-  .menu-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  }
+    .level-node-label.lbl-locked {
+      color: #627193;
+    }
 
-  .menu-title-group {
-    display: flex;
-    flex-direction: column;
-  }
+    .level-node-label.lbl-cleared {
+      color: #38ef7d;
+    }
 
-  .menu-app-title {
-    font-size: 26px;
-    font-weight: 900;
-    letter-spacing: 1px;
-    background: linear-gradient(45deg, #007aff, #4cd964);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+    .start-prompt-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
 
-  .menu-stats-badge {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 600;
-    margin-top: 2px;
-  }
+    .start-prompt-text {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #6c7c9e;
+      text-transform: uppercase;
+    }
 
-  /* World Navigation Tabs */
-  .world-tabs-scroll {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 12px;
-    margin-bottom: 16px;
-    scrollbar-width: none;
-  }
+    .play-level-btn {
+      width: 80%;
+      max-width: 380px;
+      padding: 16px 24px;
+      background: linear-gradient(180deg, #3ceb8b 0%, #15aa65 100%);
+      border: 3px solid #7effb5;
+      border-radius: 18px;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 8px 0 #0d6e3e, 0 10px 25px rgba(40, 205, 86, 0.45);
+      transition: all 0.15s ease;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
 
-  .world-tabs-scroll::-webkit-scrollbar {
-    display: none;
-  }
+    .play-level-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #0d6e3e, 0 4px 12px rgba(40, 205, 86, 0.3);
+    }
 
-  .world-tab-btn {
-    flex: 0 0 auto;
-    padding: 10px 18px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 20px;
-    color: rgba(255, 255, 255, 0.75);
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+    #hud-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 20;
+    }
 
-  .world-tab-btn.active {
-    background: #208b98;
-    color: #ffffff;
-    border-color: #4cd964;
-    box-shadow: 0 4px 12px rgba(32, 139, 152, 0.4);
-  }
+    .hud-btn {
+      width: 46px;
+      height: 46px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      border: none;
+      transition: transform 0.15s ease;
+    }
 
-  /* Level Grid Cards */
-  .level-menu-grid {
-    display: grid;
-    grid-template-columns: repeat( auto-fill, minmax(85px, 1fr) );
-    gap: 14px;
-    flex: 1;
-    align-content: start;
-    padding: 4px;
-    margin-bottom: 20px;
-  }
+    .hud-btn:active {
+      transform: scale(0.9);
+    }
 
-  .level-card {
-    position: relative;
-    aspect-ratio: 1;
-    background: rgba(255, 255, 255, 0.06);
-    border: 2px solid rgba(255, 255, 255, 0.12);
-    border-radius: 18px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s, border-color 0.2s;
-  }
+    .hud-progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(13, 17, 26, 0.45);
+      padding: 8px 20px;
+      border-radius: 30px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      pointer-events: auto;
+    }
 
-  .level-card.unlocked {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
-  }
+    .hud-lvl-num {
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
 
-  .level-card.selected {
-    border-color: #4cd964;
-    background: rgba(76, 217, 100, 0.2);
-    transform: scale(1.06);
-    box-shadow: 0 6px 18px rgba(76, 217, 100, 0.3);
-  }
+    .progress-bar-track {
+      position: relative;
+      width: 140px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 4px;
+    }
 
-  .level-card.locked {
-    opacity: 0.45;
-    cursor: not-allowed;
-    background: rgba(0, 0, 0, 0.2);
-  }
+    .progress-bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: #ffffff;
+      border-radius: 4px;
+    }
 
-  .level-card .lvl-number {
-    font-size: 20px;
-    font-weight: 900;
-  }
+    .progress-bar-dot {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 16px;
+      height: 16px;
+      background: #ffffff;
+      border: 3px solid #141824;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
 
-  .level-card .lvl-stars {
-    font-size: 11px;
-    color: #ffd700;
-    margin-top: 4px;
-    letter-spacing: 1px;
-  }
-
-  .level-card .lock-icon {
-    width: 22px;
-    height: 22px;
-    fill: rgba(255, 255, 255, 0.6);
-  }
-
-  /* Bottom Actions Bar in Menu */
-  .menu-footer-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: auto;
-  }
-</style>
+    /* Floating instructional hint */
+    #game-instruction {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(13, 17, 26, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 1.5px;
+      pointer-events: none;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      transition: opacity 0.5s ease;
+      z-index: 25;
+      white-space: nowrap;
+    }
+  </style>
 </head>
 <body>
 
-<div id="game-container">
-  <!-- Game Canvas -->
-  <canvas id="gameCanvas"></canvas>
+  <div id="app-container">
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
 
-  <!-- Top Navigation UI -->
-  <div id="top-ui">
-    <div class="ui-group">
-      <button class="ui-btn" id="restartBtn" title="Restart Level">
-        <svg viewBox="0 0 24 24">
+    <div id="main-menu-screen" class="screen-overlay">
+      <div class="flex flex-col items-center gap-6 text-center max-w-md px-4">
+        <div class="game-logo">STICKMAN HOOK</div>
+        <p class="text-white/80 text-lg font-semibold drop-shadow">Swing, bounce, and flip to the finish line!</p>
+        
+        <!-- Stickman Preview Graphic -->
+        <div class="my-4 relative w-32 h-32 flex items-center justify-center">
+          <svg class="w-28 h-28 drop-shadow-lg" viewBox="0 0 100 100">
+            <circle cx="50" cy="22" r="10" fill="#ffffff" />
+            <path d="M50 32 L50 60 M50 40 L25 25 M50 40 L75 25 M50 60 L30 88 M50 60 L70 88" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+            <!-- Swinging Rope -->
+            <line x1="50" y1="20" x2="80" y2="-20" stroke="#38ef7d" stroke-width="3" stroke-dasharray="4" />
+          </svg>
+        </div>
+
+        <div class="flex flex-col gap-4 w-full px-6">
+          <button id="main-play-btn" class="btn-3d btn-green text-xl py-4">
+            PLAY GAME
+          </button>
+          <button id="main-levels-btn" class="btn-3d btn-blue text-lg py-3.5">
+            SELECT LEVEL
+          </button>
+        </div>
+
+        <div class="mt-4 flex gap-6 text-white/70 font-bold text-sm bg-black/30 px-6 py-2.5 rounded-full border border-white/10">
+          <div>TOTAL STARS: <span id="main-stars-count" class="text-yellow-400">0</span></div>
+          <div>UNLOCKED: <span id="main-unlocked-count" class="text-emerald-400">1/50</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="level-select-screen" class="screen-overlay hidden-screen">
+      <div id="level-modal-container">
+        
+        <!-- Header Section -->
+        <div class="modal-header">
+          <div class="title">STICKMAN HOOK</div>
+          <div class="stats-line" id="modal-stats-text">Unlocked: Level 1 / 50 • Total Stars: ⭐0</div>
+          <button class="close-btn" id="modal-close-btn" title="Close Menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- World Selector Scroll Tabs -->
+        <div class="world-tabs-container" id="world-tabs-list">
+          <!-- Dynamically generated tabs -->
+        </div>
+
+        <!-- 5x2 Circular Level Buttons Grid -->
+        <div class="level-grid" id="level-grid-container">
+          <!-- Dynamically populated 10 level nodes -->
+        </div>
+
+        <!-- Bottom Start Call to Action -->
+        <div class="start-prompt-container">
+          <div class="start-prompt-text">SELECT A LEVEL TO START</div>
+          <button class="play-level-btn" id="modal-play-btn">PLAY LEVEL 1</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="hud-layer" style="display: none;">
+      <button class="hud-btn" id="hud-restart-btn" title="Restart Level">
+        <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
         </svg>
       </button>
 
-      <button class="ui-btn pwa-badge" id="pwaExportBtn" title="PWA Code & Export Files">
-        <svg viewBox="0 0 24 24">
-          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-        </svg>
-      </button>
-
-      <button class="ui-btn" id="pwaInstallBtn" title="Install Web App" style="display:none;">
-        <svg viewBox="0 0 24 24">
-          <path d="M4 6h16v2H4zm2 5h12v2H6zm3 5h6v2H9z"/>
-        </svg>
-      </button>
-    </div>
-
-    <div id="progress-container">
-      <span class="level-num" id="currentLevelText">1</span>
-      <div id="progress-bar-bg">
-        <div id="progress-bar-fill"></div>
-        <div id="progress-player-dot"></div>
+      <div class="hud-progress-pill">
+        <span class="hud-lvl-num" id="hud-current-lvl">1</span>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="hud-bar-fill"></div>
+          <div class="progress-bar-dot" id="hud-bar-dot"></div>
+        </div>
+        <span class="hud-lvl-num" id="hud-next-lvl">2</span>
       </div>
-      <span class="level-num" id="nextLevelText">2</span>
-    </div>
 
-    <button class="ui-btn" id="homeBtn" title="Level Select Menu">
-      <svg viewBox="0 0 24 24">
-        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- Dedicated Fullscreen Level Menu Screen -->
-  <div id="menu-overlay">
-    <div class="menu-header">
-      <div class="menu-title-group">
-        <div class="menu-app-title">STICKMAN HOOK</div>
-        <div class="menu-stats-badge" id="menuStatsText">Unlocked: Level 1 / 50 • Total Stars: ⭐0</div>
-      </div>
-      <button class="ui-btn" id="closeMenuBtn" title="Resume Game">
-        <svg viewBox="0 0 24 24">
-          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      <button class="hud-btn" id="hud-menu-btn" title="Level Select">
+        <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
         </svg>
       </button>
     </div>
 
-    <!-- World Level Tabs -->
-    <div class="world-tabs-scroll" id="worldTabsContainer"></div>
-
-    <!-- Level Cards Grid -->
-    <div class="level-menu-grid" id="levelMenuGrid"></div>
-
-    <!-- Menu Action Controls -->
-    <div class="menu-footer-actions">
-      <button class="primary-btn" id="startSelectedLevelBtn">PLAY SELECTED LEVEL</button>
-    </div>
+    <div id="game-instruction" style="display: none;">HOLD MOUSE / SPACE TO HOOK</div>
   </div>
-
-  <div id="instruction-hint">HOLD / PRESS SPACE TO HOOK</div>
-  <div id="level-banner">LEVEL 1</div>
-
-  <!-- Win Overlay Modal -->
-  <div class="modal-overlay" id="winModal">
-    <div class="modal-card">
-      <div class="modal-title">Level Cleared!</div>
-      <div class="modal-subtitle" id="winSubtitle">Awesome swing technique!</div>
-      <button class="primary-btn" id="nextLevelBtn">NEXT LEVEL</button>
-      <button class="secondary-btn" id="winMenuBtn">LEVEL MENU</button>
-    </div>
-  </div>
-
-  <!-- PWA Files Code & Export Modal -->
-  <div class="modal-overlay" id="pwaModal">
-    <div class="modal-card">
-      <div class="modal-title">PWA Source Files</div>
-      <div class="modal-subtitle">View, copy, or download the PWA files for external deployment.</div>
-      
-      <div class="pwa-tabs">
-        <button class="pwa-tab-btn active" id="tabSwBtn">sw.js</button>
-        <button class="pwa-tab-btn" id="tabManifestBtn">manifest.json</button>
-      </div>
-
-      <div class="code-container" id="codeDisplay"></div>
-
-      <div class="code-actions">
-        <button class="primary-btn" id="copyCodeBtn" style="background:var(--accent-blue)">Copy Code</button>
-        <button class="primary-btn" id="downloadFileBtn">Download</button>
-      </div>
-      <button class="secondary-btn" id="closePwaModalBtn">CLOSE</button>
-    </div>
-  </div>
-</div>
 
 <script>
 (function() {
   "use strict";
 
-  /* ==========================================================================
-     PWA CODE GENERATION & SERVICE WORKER SETUP
-     ========================================================================== */
-  
-  // 1. Service Worker Code Content
-  const SW_CODE = `// Service Worker for Stickman Hook PWA
-const CACHE_NAME = 'stickman-hook-pwa-v1';
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html'
-];
-
-// Install Event - Caching App Shell
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Pre-caching offline assets');
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
-  );
-});
-
-// Activate Event - Cleaning Up Old Caches
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('[SW] Removing old cache:', cache);
-            return caches.delete(cache);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
-
-// Fetch Event - Cache First with Network Fallback
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
-        }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-        return networkResponse;
-      }).catch(() => {
-        return caches.match('./');
-      });
-    })
-  );
-});`;
-
-  // 2. Web App Manifest Content
-  const MANIFEST_CODE = JSON.stringify({
-    "name": "Stickman Hook PWA",
-    "short_name": "StickmanHook",
-    "description": "Swing, hook, and flip through exciting physics-based obstacle courses!",
-    "start_url": "./",
-    "display": "standalone",
-    "background_color": "#1a1a1a",
-    "theme_color": "#208b98",
-    "orientation": "portrait-primary",
-    "icons": [
-      {
-        "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%23208b98'><circle cx='50' cy='50' r='50'/><circle cx='50' cy='30' r='12' fill='%23fff'/><path d='M50 42 L50 75 M50 55 L30 40 M50 55 L70 40 M50 75 L35 95 M50 75 L65 95' stroke='%23fff' stroke-width='6' stroke-linecap='round'/></svg>",
-        "sizes": "192x192 512x512",
-        "type": "image/svg+xml",
-        "purpose": "any maskable"
-      }
-    ]
-  }, null, 2);
-
-  // Register Web App Manifest dynamically via Data URI
-  const manifestBlob = new Blob([MANIFEST_CODE], { type: 'application/json' });
-  const manifestURL = URL.createObjectURL(manifestBlob);
-  document.getElementById('manifest-link').setAttribute('href', manifestURL);
-
-  // Register Service Worker dynamically via Blob URL
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      const swBlob = new Blob([SW_CODE], { type: 'text/javascript' });
-      const swURL = URL.createObjectURL(swBlob);
-
-      navigator.serviceWorker.register(swURL, { scope: './' })
-        .then((reg) => {
-          console.log('PWA Service Worker registered successfully with scope:', reg.scope);
-        })
-        .catch((err) => {
-          console.log('PWA Service Worker registration fallback:', err);
-        });
-    });
-  }
-
-  // Handle PWA Installation Prompt
-  let deferredPrompt;
-  const pwaInstallBtn = document.getElementById("pwaInstallBtn");
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    pwaInstallBtn.style.display = 'flex';
-  });
-
-  pwaInstallBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to install prompt: ${outcome}`);
-      deferredPrompt = null;
-      pwaInstallBtn.style.display = 'none';
-    }
-  });
-
-  const pwaModal = document.getElementById("pwaModal");
-  const pwaExportBtn = document.getElementById("pwaExportBtn");
-  const closePwaModalBtn = document.getElementById("closePwaModalBtn");
-  const tabSwBtn = document.getElementById("tabSwBtn");
-  const tabManifestBtn = document.getElementById("tabManifestBtn");
-  const codeDisplay = document.getElementById("codeDisplay");
-  const copyCodeBtn = document.getElementById("copyCodeBtn");
-  const downloadFileBtn = document.getElementById("downloadFileBtn");
-
-  let activeTab = "sw"; // 'sw' or 'manifest'
-
-  function updatePwaCodeView() {
-    if (activeTab === "sw") {
-      tabSwBtn.classList.add("active");
-      tabManifestBtn.classList.remove("active");
-      codeDisplay.textContent = SW_CODE;
-    } else {
-      tabManifestBtn.classList.add("active");
-      tabSwBtn.classList.remove("active");
-      codeDisplay.textContent = MANIFEST_CODE;
-    }
-  }
-
-  pwaExportBtn.addEventListener("click", () => {
-    updatePwaCodeView();
-    pwaModal.classList.add("active");
-  });
-
-  closePwaModalBtn.addEventListener("click", () => {
-    pwaModal.classList.remove("active");
-  });
-
-  tabSwBtn.addEventListener("click", () => {
-    activeTab = "sw";
-    updatePwaCodeView();
-  });
-
-  tabManifestBtn.addEventListener("click", () => {
-    activeTab = "manifest";
-    updatePwaCodeView();
-  });
-
-  copyCodeBtn.addEventListener("click", () => {
-    const code = activeTab === "sw" ? SW_CODE : MANIFEST_CODE;
-    navigator.clipboard.writeText(code).then(() => {
-      const origText = copyCodeBtn.textContent;
-      copyCodeBtn.textContent = "Copied!";
-      setTimeout(() => copyCodeBtn.textContent = origText, 1500);
-    });
-  });
-
-  downloadFileBtn.addEventListener("click", () => {
-    const isSw = activeTab === "sw";
-    const content = isSw ? SW_CODE : MANIFEST_CODE;
-    const filename = isSw ? "sw.js" : "manifest.json";
-    const mime = isSw ? "text/javascript" : "application/json";
-
-    const blob = new Blob([content], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-
-  /* ==========================================================================
-     AUDIO SYNTHESIZER (Web Audio API - Pure JS, No External Assets)
-     ========================================================================== */
+  // Web Audio Context Synthesizer
   let audioCtx = null;
   function getAudioContext() {
     if (!audioCtx) {
@@ -876,9 +626,9 @@ self.addEventListener('fetch', (event) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(440, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      osc.frequency.setValueAtTime(320, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(750, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -894,14 +644,14 @@ self.addEventListener('fetch', (event) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(180, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(520, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.25, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      osc.frequency.setValueAtTime(160, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(540, ctx.currentTime + 0.14);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.14);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.15);
+      osc.stop(ctx.currentTime + 0.14);
     } catch(e) {}
   }
 
@@ -909,18 +659,18 @@ self.addEventListener('fetch', (event) => {
     try {
       const ctx = getAudioContext();
       if (!ctx) return;
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.12, ctx.currentTime + idx * 0.07);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.25);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.3);
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.start(ctx.currentTime + idx * 0.07);
-        osc.stop(ctx.currentTime + idx * 0.07 + 0.25);
+        osc.start(ctx.currentTime + idx * 0.08);
+        osc.stop(ctx.currentTime + idx * 0.08 + 0.3);
       });
     } catch(e) {}
   }
@@ -932,24 +682,16 @@ self.addEventListener('fetch', (event) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(160, ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(60, ctx.currentTime + 0.25);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+      osc.frequency.setValueAtTime(150, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(50, ctx.currentTime + 0.22);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.22);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.25);
+      osc.stop(ctx.currentTime + 0.22);
     } catch(e) {}
   }
-
-  const THEMES = [
-    { skyTop: "#208b98", skyBottom: "#52ab98", cloud: "#78c2ad" }, // Teal
-    { skyTop: "#4e7729", skyBottom: "#7ca942", cloud: "#a1cb64" }, // Olive Green
-    { skyTop: "#7b4397", skyBottom: "#dc2430", cloud: "#e46870" }, // Purple Pink
-    { skyTop: "#2b5876", skyBottom: "#4e4376", cloud: "#7268a6" }, // Deep Blue
-    { skyTop: "#de6262", skyBottom: "#ffb88c", cloud: "#ffcbac" }  // Coral Sunset
-  ];
 
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
@@ -957,21 +699,21 @@ self.addEventListener('fetch', (event) => {
   let DPR = Math.min(window.devicePixelRatio || 1, 2);
   let W = 0, H = 0;
 
-  // Level & Progress State Management
-  let currentLevelIndex = 0;
-  let selectedMenuLevel = 0;
-  let currentWorldTab = 0; // 0: 1-10, 1: 11-20, etc.
-  let maxUnlockedLevel = parseInt(localStorage.getItem('stickman_unlocked_level') || '0', 10);
-  let levelStarsMap = JSON.parse(localStorage.getItem('stickman_stars_map') || '{}');
+  // Level & Progress Persistence
+  let currentLevelIdx = 0;
+  let selectedLevelIdx = 0;
+  let activeWorldTab = 0; // 0: Levels 1-10, 1: 11-20, 2: 21-30, 3: 31-40, 4: 41-50
+  let maxUnlockedLevel = parseInt(localStorage.getItem('sh_unlocked_lvl') || '0', 10);
+  let levelStarsMap = JSON.parse(localStorage.getItem('sh_stars_map') || '{"0": 3}');
 
-  let gameState = "MENU"; // "MENU", "PLAYING", "DEAD", "WIN"
+  let appState = "HOME"; // "HOME", "LEVEL_SELECT", "PLAYING", "WIN"
   let isPointerDown = false;
   let animTime = 0;
-  let dashedRingAngle = 0;
+  let ringRotation = 0;
 
-  let levelLength = 2200;
-  let startPos = { x: 100, y: 300 };
-  let finishX = 2000;
+  let levelLength = 2400;
+  let startPos = { x: 120, y: 300 };
+  let finishX = 2200;
   let hooks = [];
   let trampolines = [];
   let hazards = [];
@@ -979,12 +721,12 @@ self.addEventListener('fetch', (event) => {
   let particles = [];
   let cameraX = 0;
 
-  const GRAVITY = 1500;
+  const GRAVITY = 1550;
   const player = {
-    x: 100,
+    x: 120,
     y: 300,
-    vx: 380,
-    vy: 0,
+    vx: 360,
+    vy: -40,
     radius: 12,
     attached: false,
     anchor: null,
@@ -995,24 +737,29 @@ self.addEventListener('fetch', (event) => {
     trail: []
   };
 
-  const currentLevelText = document.getElementById("currentLevelText");
-  const nextLevelText = document.getElementById("nextLevelText");
-  const progressBarFill = document.getElementById("progress-bar-fill");
-  const progressPlayerDot = document.getElementById("progress-player-dot");
-  const restartBtn = document.getElementById("restartBtn");
-  const homeBtn = document.getElementById("homeBtn");
-  const winModal = document.getElementById("winModal");
-  const nextLevelBtn = document.getElementById("nextLevelBtn");
-  const winMenuBtn = document.getElementById("winMenuBtn");
-  const instructionHint = document.getElementById("instruction-hint");
+  // UI Element References
+  const mainMenuScreen = document.getElementById("main-menu-screen");
+  const levelSelectScreen = document.getElementById("level-select-screen");
+  const hudLayer = document.getElementById("hud-layer");
+  const gameInstruction = document.getElementById("game-instruction");
 
-  // Menu Elements
-  const menuOverlay = document.getElementById("menu-overlay");
-  const closeMenuBtn = document.getElementById("closeMenuBtn");
-  const worldTabsContainer = document.getElementById("worldTabsContainer");
-  const levelMenuGrid = document.getElementById("levelMenuGrid");
-  const startSelectedLevelBtn = document.getElementById("startSelectedLevelBtn");
-  const menuStatsText = document.getElementById("menuStatsText");
+  const mainPlayBtn = document.getElementById("main-play-btn");
+  const mainLevelsBtn = document.getElementById("main-levels-btn");
+  const mainStarsCount = document.getElementById("main-stars-count");
+  const mainUnlockedCount = document.getElementById("main-unlocked-count");
+
+  const worldTabsList = document.getElementById("world-tabs-list");
+  const levelGridContainer = document.getElementById("level-grid-container");
+  const modalStatsText = document.getElementById("modal-stats-text");
+  const modalCloseBtn = document.getElementById("modal-close-btn");
+  const modalPlayBtn = document.getElementById("modal-play-btn");
+
+  const hudCurrentLvl = document.getElementById("hud-current-lvl");
+  const hudNextLvl = document.getElementById("hud-next-lvl");
+  const hudBarFill = document.getElementById("hud-bar-fill");
+  const hudBarDot = document.getElementById("hud-bar-dot");
+  const hudRestartBtn = document.getElementById("hud-restart-btn");
+  const hudMenuBtn = document.getElementById("hud-menu-btn");
 
   function resizeCanvas() {
     W = window.innerWidth;
@@ -1027,51 +774,204 @@ self.addEventListener('fetch', (event) => {
   resizeCanvas();
 
   function saveProgress() {
-    localStorage.setItem('stickman_unlocked_level', maxUnlockedLevel.toString());
-    localStorage.setItem('stickman_stars_map', JSON.stringify(levelStarsMap));
+    localStorage.setItem('sh_unlocked_lvl', maxUnlockedLevel.toString());
+    localStorage.setItem('sh_stars_map', JSON.stringify(levelStarsMap));
   }
 
-  function generateLevel(levelIdx) {
+  function updateGlobalStatsUI() {
+    let totalStars = 0;
+    Object.values(levelStarsMap).forEach(s => totalStars += s);
+
+    mainStarsCount.textContent = totalStars;
+    mainUnlockedCount.textContent = `${maxUnlockedLevel + 1}/50`;
+    modalStatsText.textContent = `Unlocked: Level ${maxUnlockedLevel + 1} / 50 • Total Stars: ⭐${totalStars}`;
+  }
+
+  function renderWorldTabs() {
+    worldTabsList.innerHTML = "";
+    const WORLDS = [
+      { id: 0, name: "World 1 (1-10)" },
+      { id: 1, name: "World 2 (11-20)" },
+      { id: 2, name: "World 3 (21-30)" },
+      { id: 3, name: "World 4 (31-40)" },
+      { id: 4, name: "World 5 (41-50)" }
+    ];
+
+    WORLDS.forEach((w) => {
+      let btn = document.createElement("button");
+      btn.className = "world-tab-btn" + (w.id === activeWorldTab ? " active-tab" : "");
+      btn.textContent = w.name;
+      btn.onclick = () => {
+        activeWorldTab = w.id;
+        renderWorldTabs();
+        renderLevelGrid();
+      };
+      worldTabsList.appendChild(btn);
+    });
+  }
+
+  function renderLevelGrid() {
+    levelGridContainer.innerHTML = "";
+    let startLvl = activeWorldTab * 10;
+    let endLvl = startLvl + 10;
+
+    for (let i = startLvl; i < endLvl; i++) {
+      let isUnlocked = i <= maxUnlockedLevel;
+      let isCurrent = i === selectedLevelIdx;
+
+      let wrapper = document.createElement("div");
+      wrapper.className = "level-node-wrapper";
+
+      let circle = document.createElement("div");
+      let nodeClass = "level-circle ";
+      if (isCurrent && isUnlocked) {
+        nodeClass += "current-node";
+      } else if (isUnlocked) {
+        nodeClass += "unlocked-node";
+      } else {
+        nodeClass += "locked-node";
+      }
+      circle.className = nodeClass;
+
+      let starsCount = levelStarsMap[i] || 0;
+
+      if (isUnlocked) {
+        // Number
+        let numText = document.createElement("div");
+        numText.className = "level-num-text";
+        numText.textContent = i + 1;
+        circle.appendChild(numText);
+
+        // Stars row
+        let starsRow = document.createElement("div");
+        starsRow.className = "stars-row";
+        for (let s = 1; s <= 3; s++) {
+          let starSpan = document.createElement("span");
+          starSpan.className = "star-icon" + (s <= starsCount ? " filled" : "");
+          starSpan.textContent = "★";
+          starsRow.appendChild(starSpan);
+        }
+        circle.appendChild(starsRow);
+      } else {
+        // Lock Icon
+        let lockSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        lockSvg.setAttribute("class", "lock-icn");
+        lockSvg.setAttribute("viewBox", "0 0 24 24");
+        lockSvg.innerHTML = `<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>`;
+        circle.appendChild(lockSvg);
+
+        // Number below lock
+        let numText = document.createElement("div");
+        numText.className = "level-num-text";
+        numText.style.fontSize = "1.2rem";
+        numText.textContent = i + 1;
+        circle.appendChild(numText);
+
+        // Empty Stars row
+        let starsRow = document.createElement("div");
+        starsRow.className = "stars-row";
+        for (let s = 1; s <= 3; s++) {
+          let starSpan = document.createElement("span");
+          starSpan.className = "star-icon";
+          starSpan.textContent = "☆";
+          starsRow.appendChild(starSpan);
+        }
+        circle.appendChild(starsRow);
+      }
+
+      // Label underneath circle
+      let label = document.createElement("div");
+      if (isCurrent && isUnlocked) {
+        label.className = "level-node-label lbl-current";
+        label.textContent = "CURRENT";
+      } else if (isUnlocked) {
+        label.className = "level-node-label lbl-cleared";
+        label.textContent = "CLEAR";
+      } else {
+        label.className = "level-node-label lbl-locked";
+        label.textContent = "LOCKED";
+      }
+
+      wrapper.appendChild(circle);
+      wrapper.appendChild(label);
+
+      if (isUnlocked) {
+        wrapper.onclick = () => {
+          selectedLevelIdx = i;
+          renderLevelGrid();
+          updateModalPlayBtnText();
+        };
+      }
+
+      levelGridContainer.appendChild(wrapper);
+    }
+  }
+
+  function updateModalPlayBtnText() {
+    modalPlayBtn.textContent = `PLAY LEVEL ${selectedLevelIdx + 1}`;
+  }
+
+  function openLevelSelectScreen() {
+    appState = "LEVEL_SELECT";
+    activeWorldTab = Math.floor(selectedLevelIdx / 10);
+    updateGlobalStatsUI();
+    renderWorldTabs();
+    renderLevelGrid();
+    updateModalPlayBtnText();
+
+    mainMenuScreen.classList.add("hidden-screen");
+    levelSelectScreen.classList.remove("hidden-screen");
+    hudLayer.style.display = "none";
+    gameInstruction.style.display = "none";
+  }
+
+  function openHomeScreen() {
+    appState = "HOME";
+    updateGlobalStatsUI();
+    mainMenuScreen.classList.remove("hidden-screen");
+    levelSelectScreen.classList.add("hidden-screen");
+    hudLayer.style.display = "none";
+    gameInstruction.style.display = "none";
+  }
+
+  function startLevel(levelIdx) {
+    currentLevelIdx = levelIdx;
+    selectedLevelIdx = levelIdx;
+    appState = "PLAYING";
+
     hooks = [];
     trampolines = [];
     hazards = [];
     particles = [];
-    
-    currentLevelIndex = levelIdx;
-    levelLength = 3200 + levelIdx * 650;
+
+    levelLength = 3000 + levelIdx * 600;
     startPos = { x: 120, y: H * 0.45 };
-    finishX = levelLength - 200;
+    finishX = levelLength - 220;
 
     player.x = startPos.x;
     player.y = startPos.y;
     player.vx = 340;
-    player.vy = -50;
+    player.vy = -60;
     player.attached = false;
     player.anchor = null;
     player.trail = [];
     player.bodyAngle = 0;
 
-    let theme = THEMES[levelIdx % THEMES.length];
-    document.documentElement.style.setProperty('--bg-theme', theme.skyTop);
-
     let baseSpacing = 180 + Math.min(levelIdx * 8, 140);
-    let spacingVar = 60 + Math.min(levelIdx * 10, 180);
     let movingHookChance = Math.min(levelIdx * 0.08, 0.65);
-    let trampolineChance = Math.max(0.18, 0.75 - levelIdx * 0.025);
-    let hazardChance = levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.12, 0.55) : 0;
+    let trampolineChance = Math.max(0.2, 0.75 - levelIdx * 0.02);
+    let hazardChance = levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.12, 0.5) : 0;
 
     let currX = 280;
 
-    while (currX < finishX - 220) {
-      let spacing = baseSpacing + Math.random() * spacingVar;
+    while (currX < finishX - 250) {
+      let spacing = baseSpacing + Math.random() * 80;
       currX += spacing;
 
-      let heightVariance = Math.min(0.22 + levelIdx * 0.015, 0.42);
-      let hookY = H * (0.18 + Math.random() * heightVariance);
-
+      let hookY = H * (0.2 + Math.random() * 0.35);
       let isMoving = Math.random() < movingHookChance;
-      let moveSpeed = 40 + Math.random() * (40 + Math.min(levelIdx * 10, 100));
-      let moveRange = 50 + Math.random() * 70;
+      let moveSpeed = 40 + Math.random() * (40 + Math.min(levelIdx * 10, 80));
+      let moveRange = 45 + Math.random() * 65;
 
       hooks.push({
         x: currX,
@@ -1085,143 +985,39 @@ self.addEventListener('fetch', (event) => {
       });
 
       if (hazardChance > 0 && Math.random() < hazardChance && currX < finishX - 400) {
-        let hazWidth = 70 + Math.random() * (60 + Math.min(levelIdx * 5, 80));
-        let hazY = hookY + 140 + Math.random() * 80;
+        let hazW = 70 + Math.random() * 70;
+        let hazY = hookY + 140 + Math.random() * 70;
         if (hazY < H - 80) {
-          hazards.push({
-            x: currX - hazWidth / 2,
-            y: hazY,
-            w: hazWidth,
-            h: 22
-          });
+          hazards.push({ x: currX - hazW / 2, y: hazY, w: hazW, h: 22 });
         }
       }
 
       if (Math.random() < trampolineChance || currX > finishX - 350) {
         let trampX = currX + (Math.random() * 60 - 30);
-        let trampY = Math.min(H - 80, hookY + 230 + Math.random() * 70);
-        let trampW = Math.max(50, 95 - levelIdx * 1.5);
-        trampolines.push({
-          x: trampX - trampW / 2,
-          y: trampY,
-          w: trampW,
-          h: 18,
-          squish: 0
-        });
+        let trampY = Math.min(H - 80, hookY + 230 + Math.random() * 60);
+        let trampW = Math.max(50, 90 - levelIdx * 1.2);
+        trampolines.push({ x: trampX - trampW / 2, y: trampY, w: trampW, h: 18, squish: 0 });
       }
     }
 
+    // Launch pad trampoline
     trampolines.unshift({
       x: startPos.x - 40,
-      y: startPos.y + 120,
+      y: startPos.y + 110,
       w: 120,
       h: 18,
       squish: 0
     });
 
-    currentLevelText.textContent = levelIdx + 1;
-    nextLevelText.textContent = levelIdx + 2;
+    hudCurrentLvl.textContent = levelIdx + 1;
+    hudNextLvl.textContent = levelIdx + 2;
     updateProgressBar(0);
-    showLevelBanner(levelIdx);
 
-    gameState = "PLAYING";
-    menuOverlay.classList.remove("active");
-    winModal.classList.remove("active");
-  }
-
-  function openLevelMenu(worldIdx) {
-    gameState = "MENU";
-    if (worldIdx !== undefined) {
-      currentWorldTab = worldIdx;
-    } else {
-      currentWorldTab = Math.floor(currentLevelIndex / 10);
-    }
-    selectedMenuLevel = currentLevelIndex;
-
-    renderWorldTabs();
-    renderLevelGrid();
-    updateMenuStats();
-
-    menuOverlay.classList.add("active");
-  }
-
-  function closeLevelMenu() {
-    if (gameState === "MENU") {
-      generateLevel(selectedMenuLevel);
-    } else {
-      menuOverlay.classList.remove("active");
-    }
-  }
-
-  function renderWorldTabs() {
-    worldTabsContainer.innerHTML = "";
-    const TOTAL_WORLDS = 5; // 50 levels total (10 per world)
-
-    for (let w = 0; w < TOTAL_WORLDS; w++) {
-      let btn = document.createElement("button");
-      btn.className = "world-tab-btn" + (w === currentWorldTab ? " active" : "");
-      let startLvl = w * 10 + 1;
-      let endLvl = (w + 1) * 10;
-      btn.textContent = `World ${w + 1} (${startLvl}-${endLvl})`;
-
-      btn.onclick = () => {
-        currentWorldTab = w;
-        renderWorldTabs();
-        renderLevelGrid();
-      };
-      worldTabsContainer.appendChild(btn);
-    }
-  }
-
-  function renderLevelGrid() {
-    levelMenuGrid.innerHTML = "";
-    let startIdx = currentWorldTab * 10;
-    let endIdx = startIdx + 10;
-
-    for (let i = startIdx; i < endIdx; i++) {
-      let isUnlocked = i <= maxUnlockedLevel;
-      let card = document.createElement("div");
-      card.className = "level-card" + 
-        (isUnlocked ? " unlocked" : " locked") + 
-        (i === selectedMenuLevel ? " selected" : "");
-
-      if (isUnlocked) {
-        let numSpan = document.createElement("div");
-        numSpan.className = "lvl-number";
-        numSpan.textContent = i + 1;
-        card.appendChild(numSpan);
-
-        let stars = levelStarsMap[i] || 3;
-        let starSpan = document.createElement("div");
-        starSpan.className = "lvl-stars";
-        starSpan.textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
-        card.appendChild(starSpan);
-
-        card.onclick = (e) => {
-          e.stopPropagation();
-          selectedMenuLevel = i;
-          renderLevelGrid();
-        };
-
-        card.ondblclick = (e) => {
-          e.stopPropagation();
-          selectedMenuLevel = i;
-          generateLevel(selectedMenuLevel);
-        };
-      } else {
-        card.innerHTML = `<svg class="lock-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>`;
-      }
-
-      levelMenuGrid.appendChild(card);
-    }
-
-    startSelectedLevelBtn.textContent = `PLAY LEVEL ${selectedMenuLevel + 1}`;
-  }
-
-  function updateMenuStats() {
-    let totalStars = 0;
-    Object.values(levelStarsMap).forEach(s => totalStars += s);
-    menuStatsText.textContent = `Unlocked: Level ${maxUnlockedLevel + 1} / 50 • Total Stars: ⭐${totalStars}`;
+    mainMenuScreen.classList.add("hidden-screen");
+    levelSelectScreen.classList.add("hidden-screen");
+    hudLayer.style.display = "flex";
+    gameInstruction.style.display = "block";
+    gameInstruction.style.opacity = "1";
   }
 
   function findClosestAheadHook() {
@@ -1233,7 +1029,7 @@ self.addEventListener('fetch', (event) => {
       let dy = h.y - player.y;
       let dist = Math.hypot(dx, dy);
 
-      if (dx > -60 && dist < 450 && dist < minDistance) {
+      if (dx > -60 && dist < 460 && dist < minDistance) {
         minDistance = dist;
         best = h;
       }
@@ -1276,73 +1072,54 @@ self.addEventListener('fetch', (event) => {
     player.anchor = null;
   }
 
-  function onPointerDown(e) {
-    if (gameState !== "PLAYING" && gameState !== "DEAD") return;
-    if (e && e.target.closest && e.target.closest("#top-ui, .modal-overlay, #menu-overlay")) return;
+  function handleInputDown(e) {
+    if (appState !== "PLAYING" && appState !== "DEAD") return;
+    if (e && e.target && e.target.closest("#hud-layer, .screen-overlay")) return;
 
     isPointerDown = true;
-    instructionHint.style.opacity = "0";
+    gameInstruction.style.opacity = "0";
 
-    if (gameState === "DEAD") {
-      generateLevel(currentLevelIndex);
+    if (appState === "DEAD") {
+      startLevel(currentLevelIdx);
       return;
     }
 
-    if (gameState === "PLAYING" && !player.attached) {
+    if (appState === "PLAYING" && !player.attached) {
       attachHook();
     }
   }
 
-  function onPointerUp() {
+  function handleInputUp() {
     isPointerDown = false;
     if (player.attached) {
       detachHook();
     }
   }
 
-  window.addEventListener("pointerdown", onPointerDown);
-  window.addEventListener("pointerup", onPointerUp);
+  window.addEventListener("pointerdown", handleInputDown);
+  window.addEventListener("pointerup", handleInputUp);
   window.addEventListener("keydown", (e) => {
     if (e.code === "Space") {
       e.preventDefault();
-      if (!isPointerDown) onPointerDown();
+      if (!isPointerDown) handleInputDown();
     }
   });
   window.addEventListener("keyup", (e) => {
-    if (e.code === "Space") onPointerUp();
+    if (e.code === "Space") handleInputUp();
   });
 
-  restartBtn.addEventListener("click", () => generateLevel(currentLevelIndex));
-  homeBtn.addEventListener("click", () => openLevelMenu());
-  closeMenuBtn.addEventListener("click", closeLevelMenu);
-  startSelectedLevelBtn.addEventListener("click", () => generateLevel(selectedMenuLevel));
-
-  nextLevelBtn.addEventListener("click", () => {
-    currentLevelIndex++;
-    generateLevel(currentLevelIndex);
-  });
-  
-  if (winMenuBtn) {
-    winMenuBtn.addEventListener("click", () => {
-      winModal.classList.remove("active");
-      openLevelMenu();
-    });
-  }
-
-  function showLevelBanner(levelIdx) {
-    const banner = document.getElementById("level-banner");
-    banner.textContent = "LEVEL " + (levelIdx + 1);
-    banner.classList.add("show");
-    setTimeout(() => {
-      banner.classList.remove("show");
-    }, 1800);
-  }
+  mainPlayBtn.onclick = () => startLevel(maxUnlockedLevel);
+  mainLevelsBtn.onclick = () => openLevelSelectScreen();
+  modalCloseBtn.onclick = () => openHomeScreen();
+  modalPlayBtn.onclick = () => startLevel(selectedLevelIdx);
+  hudRestartBtn.onclick = () => startLevel(currentLevelIdx);
+  hudMenuBtn.onclick = () => openLevelSelectScreen();
 
   let lastTime = performance.now();
 
   function update(dt) {
     animTime += dt;
-    dashedRingAngle += dt * 3;
+    ringRotation += dt * 3.5;
 
     for (let h of hooks) {
       if (h.isMoving) {
@@ -1351,7 +1128,7 @@ self.addEventListener('fetch', (event) => {
       }
     }
 
-    if (gameState === "PLAYING") {
+    if (appState === "PLAYING") {
       targetHook = findClosestAheadHook();
 
       if (player.attached) {
@@ -1359,7 +1136,7 @@ self.addEventListener('fetch', (event) => {
         let angAcc = -(GRAVITY / r) * Math.sin(player.angle);
 
         player.angularVelocity += angAcc * dt;
-        player.angularVelocity *= 0.9992;
+        player.angularVelocity *= 0.9993;
         player.angle += player.angularVelocity * dt;
 
         player.x = player.anchor.x + r * Math.sin(player.angle);
@@ -1377,8 +1154,7 @@ self.addEventListener('fetch', (event) => {
         player.x += player.vx * dt;
         player.y += player.vy * dt;
 
-        if (player.vx < 260) player.vx += 100 * dt;
-
+        if (player.vx < 260) player.vx += 110 * dt;
         player.bodyAngle = Math.atan2(player.vy, player.vx);
 
         if (isPointerDown) {
@@ -1399,11 +1175,11 @@ self.addEventListener('fetch', (event) => {
           player.y + player.radius >= t.y &&
           player.y - player.radius <= t.y + t.h
         ) {
-          player.vy = -Math.max(780, Math.abs(player.vy) * 0.95);
+          player.vy = -Math.max(800, Math.abs(player.vy) * 0.96);
           player.vx = Math.max(player.vx * 1.05, 360);
           player.y = t.y - player.radius;
           t.squish = 1;
-          spawnParticles(player.x, t.y, "#ffffff", 12);
+          spawnParticles(player.x, t.y, "#ffffff", 14);
           playBounceSound();
           if (player.attached) detachHook();
         }
@@ -1418,37 +1194,39 @@ self.addEventListener('fetch', (event) => {
         ) {
           spawnParticles(player.x, player.y, "#ff4444", 25);
           playFailSound();
-          gameState = "DEAD";
+          appState = "DEAD";
           setTimeout(() => {
-            if (gameState === "DEAD") generateLevel(currentLevelIndex);
+            if (appState === "DEAD") startLevel(currentLevelIdx);
           }, 450);
           break;
         }
       }
 
-      if (player.y > H + 100) {
+      if (player.y > H + 120) {
         playFailSound();
-        gameState = "DEAD";
+        appState = "DEAD";
         setTimeout(() => {
-          if (gameState === "DEAD") generateLevel(currentLevelIndex);
+          if (appState === "DEAD") startLevel(currentLevelIdx);
         }, 500);
       }
 
       if (player.x >= finishX) {
-        gameState = "WIN";
-        spawnParticles(finishX, H * 0.4, "#ffffff", 40);
+        appState = "WIN";
+        spawnParticles(finishX, H * 0.4, "#ffffff", 50);
         playWinSound();
 
-        // Save progress & Stars
-        if (currentLevelIndex >= maxUnlockedLevel) {
-          maxUnlockedLevel = Math.min(49, currentLevelIndex + 1);
+        if (currentLevelIdx >= maxUnlockedLevel) {
+          maxUnlockedLevel = Math.min(49, currentLevelIdx + 1);
         }
-        levelStarsMap[currentLevelIndex] = 3; // 3 stars upon completion
+        levelStarsMap[currentLevelIdx] = 3;
         saveProgress();
 
+        // Advance default selected level to the next level for the level selector menu
+        selectedLevelIdx = Math.min(49, currentLevelIdx + 1);
+
         setTimeout(() => {
-          winModal.classList.add("active");
-        }, 400);
+          openLevelSelectScreen();
+        }, 1000);
       }
 
       let targetCamX = player.x - W * 0.28;
@@ -1456,6 +1234,8 @@ self.addEventListener('fetch', (event) => {
 
       let progress = Math.min(1, Math.max(0, (player.x - startPos.x) / (finishX - startPos.x)));
       updateProgressBar(progress);
+    } else {
+      cameraX += 60 * dt;
     }
 
     for (let p of particles) {
@@ -1468,14 +1248,14 @@ self.addEventListener('fetch', (event) => {
 
   function updateProgressBar(progress) {
     let pct = (progress * 100).toFixed(1) + "%";
-    progressBarFill.style.width = pct;
-    progressPlayerDot.style.left = pct;
+    hudBarFill.style.width = pct;
+    hudBarDot.style.left = pct;
   }
 
   function spawnParticles(x, y, color, count) {
     for (let i = 0; i < count; i++) {
       let ang = Math.random() * Math.PI * 2;
-      let spd = 50 + Math.random() * 220;
+      let spd = 60 + Math.random() * 240;
       particles.push({
         x: x,
         y: y,
@@ -1491,15 +1271,14 @@ self.addEventListener('fetch', (event) => {
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    let theme = THEMES[currentLevelIndex % THEMES.length];
-
+    // Dynamic gradient background
     let skyGrad = ctx.createLinearGradient(0, 0, 0, H);
-    skyGrad.addColorStop(0, theme.skyTop);
-    skyGrad.addColorStop(1, theme.skyBottom);
+    skyGrad.addColorStop(0, "#208b98");
+    skyGrad.addColorStop(1, "#4eb5a7");
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, W, H);
 
-    drawClouds(theme.cloud);
+    drawClouds();
 
     ctx.save();
     ctx.translate(-cameraX, 0);
@@ -1528,13 +1307,15 @@ self.addEventListener('fetch', (event) => {
       ctx.fill();
     }
 
-    drawStickman();
+    if (appState === "PLAYING" || appState === "DEAD") {
+      drawStickman();
+    }
 
     for (let p of particles) {
       ctx.fillStyle = p.color;
       ctx.globalAlpha = p.life / p.maxLife;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalAlpha = 1;
     }
@@ -1542,9 +1323,9 @@ self.addEventListener('fetch', (event) => {
     ctx.restore();
   }
 
-  function drawClouds(cloudColor) {
-    ctx.fillStyle = cloudColor;
-    ctx.globalAlpha = 0.5;
+  function drawClouds() {
+    ctx.fillStyle = "#78c2ad";
+    ctx.globalAlpha = 0.45;
 
     let cloudCamX = cameraX * 0.25;
     ctx.beginPath();
@@ -1583,7 +1364,7 @@ self.addEventListener('fetch', (event) => {
       if (isCurrentAnchor || isTargetCandidate) {
         ctx.save();
         ctx.translate(h.x, h.y);
-        ctx.rotate(dashedRingAngle);
+        ctx.rotate(ringRotation);
         ctx.beginPath();
         ctx.arc(0, 0, 24, 0, Math.PI * 2);
         ctx.setLineDash([6, 6]);
@@ -1643,14 +1424,6 @@ self.addEventListener('fetch', (event) => {
       ctx.strokeStyle = "#ffffff";
       ctx.stroke();
 
-      ctx.beginPath();
-      ctx.moveTo(-t.w / 2 + 8, -t.h / 2 + 3);
-      ctx.lineTo(t.w / 2 - 8, -t.h / 2 + 3);
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 3;
-      ctx.lineCap = "round";
-      ctx.stroke();
-
       ctx.restore();
     }
   }
@@ -1690,16 +1463,19 @@ self.addEventListener('fetch', (event) => {
     let cycle = Math.sin(animTime * 15);
     let legBend = player.attached ? 6 : cycle * 8;
 
+    // Head
     ctx.beginPath();
     ctx.arc(0, -14, 7, 0, Math.PI * 2);
     ctx.fillStyle = "#000000";
     ctx.fill();
 
+    // Body Spine
     ctx.beginPath();
     ctx.moveTo(0, -7);
     ctx.lineTo(0, 8);
     ctx.stroke();
 
+    // Arms
     ctx.beginPath();
     if (player.attached) {
       ctx.moveTo(0, -4);
@@ -1714,6 +1490,7 @@ self.addEventListener('fetch', (event) => {
     }
     ctx.stroke();
 
+    // Legs
     ctx.beginPath();
     ctx.moveTo(0, 8);
     ctx.lineTo(-7 - legBend, 20);
@@ -1728,11 +1505,7 @@ self.addEventListener('fetch', (event) => {
     if (w < 2 * r) r = w / 2;
     if (h < 2 * r) r = h / 2;
 
-    if (typeof context.roundRect === 'function') {
-      context.roundRect(x, y, w, h, r);
-      return;
-    }
-
+    context.beginPath();
     context.moveTo(x + r, y);
     context.arcTo(x + w, y, x + w, y + h, r);
     context.arcTo(x + w, y + h, x, y + h, r);
@@ -1752,8 +1525,8 @@ self.addEventListener('fetch', (event) => {
     requestAnimationFrame(gameLoop);
   }
 
-  // Initial setup: Open Level Menu on startup
-  openLevelMenu();
+  // Initial Boot
+  updateGlobalStatsUI();
   requestAnimationFrame(gameLoop);
 
 })();
