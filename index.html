@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Stickman Hook</title>
+
+<!-- PWA Manifest & Theme Integration -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#208b98">
+<link rel="apple-touch-icon" href="icon-192.png">
+
 <style>
   :root {
     --bg-theme: #208b98;
@@ -272,6 +278,20 @@
     opacity: 1;
     transform: translate(-50%, -60%);
   }
+
+  #instruction-hint {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 1px;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
 </style>
 </head>
 <body>
@@ -412,167 +432,6 @@
   }
   window.addEventListener("resize", resizeCanvas);
   resizeCanvas();
-
-  /* ==========================================================================
-     PROCEDURAL LEVEL GENERATOR
-     ========================================================================== */
-  function generateLevel(levelIdx) {
-    hooks = [];
-    trampolines = [];
-    particles = [];
-    
-    // Determine level length and parameters
-    levelLength = 2000 + levelIdx * 350;
-    startPos = { x: 120, y: H * 0.45 };
-    finishX = levelLength - 180;
-
-    player.x = startPos.x;
-    player.y = startPos.y;
-    player.vx = 320;
-    player.vy = -50;
-    player.attached = false;
-    player.anchor = null;
-    player.trail = [];
-    player.bodyAngle = 0;
-
-    let theme = THEMES[levelIdx % THEMES.length];
-    document.documentElement.style.setProperty('--bg-theme', theme.skyTop);
-
-    // Procedurally layout Hooks and Trampolines
-    let currX = 280;
-    let lastY = H * 0.35;
-
-    while (currX < finishX - 150) {
-      let spacing = 180 + Math.random() * 100;
-      currX += spacing;
-
-      let hookY = H * 0.22 + Math.random() * (H * 0.32);
-      hooks.push({
-        x: currX,
-        y: hookY,
-        radius: 14
-      });
-
-      // Add trampolines underneath high gaps or periodically
-      if (Math.random() < 0.65 || currX > finishX - 300) {
-        let trampX = currX + (Math.random() * 60 - 30);
-        let trampY = Math.min(H - 90, hookY + 220 + Math.random() * 60);
-        trampolines.push({
-          x: trampX - 45,
-          y: trampY,
-          w: 90,
-          h: 18,
-          squish: 0
-        });
-      }
-
-      lastY = hookY;
-    }
-
-    // Safety trampoline near start
-    trampolines.unshift({
-      x: startPos.x - 40,
-      y: startPos.y + 120,
-      w: 120,
-      h: 18,
-      squish: 0
-    });
-
-    // Update UI Progress Text
-    currentLevelText.textContent = levelIdx + 1;
-    nextLevelText.textContent = levelIdx + 2;
-    updateProgressBar(0);
-
-    gameState = "PLAYING";
-    winModal.classList.remove("active");
-    levelModal.classList.remove("active");
-  }
-
-  /* ==========================================================================
-     INPUT HANDLING (Pointer / Mouse / Touch / Keyboard)
-     ========================================================================== */
-  function onPointerDown(e) {
-    if (e && e.target.closest && e.target.closest("#top-ui, .modal-overlay")) return;
-    isPointerDown = true;
-    instructionHint.style.opacity = "0";
-
-    if (gameState === "DEAD") {
-      generateLevel(currentLevelIndex);
-      return;
-    }
-
-    if (gameState === "PLAYING" && !player.attached) {
-      attachHook();
-    }
-  }
-
-  function onPointerUp(e) {
-    isPointerDown = false;
-    if (player.attached) {
-      detachHook();
-    }
-  }
-
-  window.addEventListener("pointerdown", onPointerDown);
-  window.addEventListener("pointerup", onPointerUp);
-  window.addEventListener("keydown", (e) => {
-    if (e.code === "Space") {
-      e.preventDefault();
-      if (!isPointerDown) {
-        onPointerDown();
-      }
-    }
-  });
-  window.addEventListener("keyup", (e) => {
-    if (e.code === "Space") {
-      onPointerUp();
-    }
-  });
-
-  restartBtn.addEventListener("click", () => generateLevel(currentLevelIndex));
-  homeBtn.addEventListener("click", openLevelModal);
-  nextLevelBtn.addEventListener("click", () => {
-    currentLevelIndex++;
-    generateLevel(currentLevelIndex);
-  });
-  closeLevelModalBtn.addEventListener("click", () => levelModal.classList.remove("active"));
-
-  function openLevelModal() {
-    levelGrid.innerHTML = "";
-    // Display 50 numbered levels with scaled difficulty labels
-    for (let i = 0; i < 50; i++) {
-      let node = document.createElement("div");
-      node.className = "level-node" + (i === currentLevelIndex ? " current" : "");
-      
-      let numSpan = document.createElement("span");
-      numSpan.textContent = i + 1;
-      node.appendChild(numSpan);
-
-      let diffTag = document.createElement("span");
-      diffTag.className = "diff-indicator";
-      if (i < 5) diffTag.textContent = "EASY";
-      else if (i < 15) diffTag.textContent = "MEDIUM";
-      else if (i < 30) diffTag.textContent = "HARD";
-      else diffTag.textContent = "EXPERT";
-      node.appendChild(diffTag);
-
-      node.onclick = () => {
-        currentLevelIndex = i;
-        generateLevel(currentLevelIndex);
-      };
-      levelGrid.appendChild(node);
-    }
-    levelModal.classList.add("active");
-  }
-
-  function showLevelBanner(levelIdx) {
-    const banner = document.getElementById("level-banner");
-    banner.textContent = "LEVEL " + (levelIdx + 1);
-    banner.classList.add("show");
-    setTimeout(() => {
-      banner.classList.remove("show");
-    }, 1800);
-  }
 
   /* ==========================================================================
      PROCEDURAL LEVEL GENERATOR (SCALED DIFFICULTY & LONGER PATHS)
@@ -737,6 +596,89 @@
 
     player.attached = false;
     player.anchor = null;
+  }
+
+  function onPointerDown(e) {
+    if (e && e.target.closest && e.target.closest("#top-ui, .modal-overlay")) return;
+    isPointerDown = true;
+    if (instructionHint) instructionHint.style.opacity = "0";
+
+    if (gameState === "DEAD") {
+      generateLevel(currentLevelIndex);
+      return;
+    }
+
+    if (gameState === "PLAYING" && !player.attached) {
+      attachHook();
+    }
+  }
+
+  function onPointerUp(e) {
+    isPointerDown = false;
+    if (player.attached) {
+      detachHook();
+    }
+  }
+
+  window.addEventListener("pointerdown", onPointerDown);
+  window.addEventListener("pointerup", onPointerUp);
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+      e.preventDefault();
+      if (!isPointerDown) {
+        onPointerDown();
+      }
+    }
+  });
+  window.addEventListener("keyup", (e) => {
+    if (e.code === "Space") {
+      onPointerUp();
+    }
+  });
+
+  restartBtn.addEventListener("click", () => generateLevel(currentLevelIndex));
+  homeBtn.addEventListener("click", openLevelModal);
+  nextLevelBtn.addEventListener("click", () => {
+    currentLevelIndex++;
+    generateLevel(currentLevelIndex);
+  });
+  closeLevelModalBtn.addEventListener("click", () => levelModal.classList.remove("active"));
+
+  function openLevelModal() {
+    levelGrid.innerHTML = "";
+    // Display 50 numbered levels with scaled difficulty labels
+    for (let i = 0; i < 50; i++) {
+      let node = document.createElement("div");
+      node.className = "level-node" + (i === currentLevelIndex ? " current" : "");
+      
+      let numSpan = document.createElement("span");
+      numSpan.textContent = i + 1;
+      node.appendChild(numSpan);
+
+      let diffTag = document.createElement("span");
+      diffTag.className = "diff-indicator";
+      if (i < 5) diffTag.textContent = "EASY";
+      else if (i < 15) diffTag.textContent = "MEDIUM";
+      else if (i < 30) diffTag.textContent = "HARD";
+      else diffTag.textContent = "EXPERT";
+      node.appendChild(diffTag);
+
+      node.onclick = () => {
+        currentLevelIndex = i;
+        generateLevel(currentLevelIndex);
+      };
+      levelGrid.appendChild(node);
+    }
+    levelModal.classList.add("active");
+  }
+
+  function showLevelBanner(levelIdx) {
+    const banner = document.getElementById("level-banner");
+    banner.textContent = "LEVEL " + (levelIdx + 1);
+    banner.classList.add("show");
+    setTimeout(() => {
+      banner.classList.remove("show");
+    }, 1800);
   }
 
   /* ==========================================================================
@@ -1166,6 +1108,10 @@
   }
 
   function roundRect(context, x, y, w, h, r) {
+    if (context.roundRect) {
+      context.roundRect(x, y, w, h, r);
+      return;
+    }
     if (w < 2 * r) r = w / 2;
     if (h < 2 * r) r = h / 2;
     context.moveTo(x + r, y);
@@ -1196,5 +1142,17 @@
 
 })();
 </script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => console.log('SW Registered:', reg.scope))
+        .catch((err) => console.error('SW Registration Failed:', err));
+    });
+  }
+</script>
+
 </body>
 </html>
