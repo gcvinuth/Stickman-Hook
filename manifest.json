@@ -1,17 +1,24 @@
 {
   "name": "Stickman Hook",
   "short_name": "StickmanHook",
-  "description": "Swing through obstacles and reach the finish line!",
+  "description": "Swing through challenging obstacles and reach the finish line!",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#1a1a1a",
   "theme_color": "#208b98",
-  "orientation": "any",
   "icons": [
     {
-      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%23208b98'/><circle cx='256' cy='160' r='50' fill='%23ffffff'/><path d='M256 210 L256 340 M256 260 L180 200 M256 260 L332 200 M256 340 L190 430 M256 340 L322 430' stroke='%23ffffff' stroke-width='32' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
