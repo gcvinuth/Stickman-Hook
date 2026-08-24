@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Stickman Hook</title>
+<style>
+  :root {
+    --bg-theme: #208b98;
+    --ui-white: #ffffff;
+    --ui-dark: #333333;
+  }
+
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #1a1a1a;
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  }
+
+  #game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+
+  /* TOP UI OVERLAY */
+  #top-ui {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .ui-btn {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease, background-color 0.15s;
+  }
+
+  .ui-btn:active {
+    transform: scale(0.9);
+  }
+
+  .ui-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: #333;
+  }
+
+  /* Level Progress Bar */
+  #progress-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 8px 18px;
+    border-radius: 30px;
+    backdrop-filter: blur(4px);
+    pointer-events: auto;
+  }
+
+  .level-num {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 18px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  #progress-bar-bg {
+    position: relative;
+    width: 140px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 4px;
+    overflow: visible;
+  }
+
+  #progress-bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: #ffffff;
+    border-radius: 4px;
+    transition: width 0.1s linear;
+  }
+
+  #progress-player-dot {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border: 3px solid #333333;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: left 0.1s linear;
+  }
+
+  /* MODALS & OVERLAYS */
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 32px;
+    width: 85%;
+    max-width: 340px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .modal-overlay.active .modal-card {
+    transform: translateY(0);
+  }
+
+  .modal-title {
+    font-size: 26px;
+    font-weight: 900;
+    color: #222;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .modal-subtitle {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  .primary-btn {
+    width: 100%;
+    padding: 14px 20px;
+    background: #4cd964;
+    border: none;
+    border-radius: 14px;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(76, 217, 100, 0.4);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .primary-btn:active {
+    transform: scale(0.96);
+  }
+
+  /* Level Select Grid */
+  .level-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 6px;
+  }
+
+  .level-node {
+    aspect-ratio: 1;
+    background: #f0f0f5;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: #444;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+    border: 2px solid transparent;
+  }
+
+  .level-node.current {
+    background: #208b98;
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(32, 139, 152, 0.4);
+    border-color: #ffffff;
+  }
+
+  .level-node .diff-indicator {
+    font-size: 9px;
+    font-weight: 600;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+
+  .level-node:active {
+    transform: scale(0.9);
+  }
+
+  /* Level Title Banner Overlay */
+  #level-banner {
+    position: absolute;
+    top: 22%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 42px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    letter-spacing: 2px;
+    z-index: 12;
+    text-transform: uppercase;
+  }
+  #level-banner.show {
+    opacity: 1;
+    transform: translate(-50%, -60%);
+  }
+</style>
+</head>
+<body>
+
+<div id="game-container">
+  <!-- Game Canvas -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Top Navigation UI -->
+  <div id="top-ui">
+    <div class="ui-btn" id="restartBtn" title="Restart Level">
+      <svg viewBox="0 0 24 24">
+        <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+      </svg>
+    </div>
+
+    <div id="progress-container">
+      <span class="level-num" id="currentLevelText">1</span>
+      <div id="progress-bar-bg">
+        <div id="progress-bar-fill"></div>
+        <div id="progress-player-dot"></div>
+      </div>
+      <span class="level-num" id="nextLevelText">2</span>
+    </div>
+
+    <div class="ui-btn" id="homeBtn" title="Level Select">
+      <svg viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+    </div>
+  </div>
+
+  <div id="instruction-hint">TAP &amp; HOLD TO HOOK</div>
+  <div id="level-banner">LEVEL 1</div>
+
+  <!-- Win Overlay Modal -->
+  <div class="modal-overlay" id="winModal">
+    <div class="modal-card">
+      <div class="modal-title">Level Cleared!</div>
+      <div class="modal-subtitle" id="winSubtitle">Great job!</div>
+      <button class="primary-btn" id="nextLevelBtn">NEXT LEVEL</button>
+    </div>
+  </div>
+
+  <!-- Level Select Modal -->
+  <div class="modal-overlay" id="levelModal">
+    <div class="modal-card">
+      <div class="modal-title">Select Level</div>
+      <div class="level-grid" id="levelGrid"></div>
+      <button class="primary-btn" id="closeLevelModalBtn" style="background:#888;">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  /* ==========================================================================
+     COLOR THEMES & LEVEL SCHEMES
+     ========================================================================== */
+  const THEMES = [
+    { skyTop: "#208b98", skyBottom: "#52ab98", cloud: "#78c2ad" }, // Teal
+    { skyTop: "#4e7729", skyBottom: "#7ca942", cloud: "#a1cb64" }, // Olive Green
+    { skyTop: "#7b4397", skyBottom: "#dc2430", cloud: "#e46870" }, // Purple Pink
+    { skyTop: "#2b5876", skyBottom: "#4e4376", cloud: "#7268a6" }, // Deep Blue
+    { skyTop: "#de6262", skyBottom: "#ffb88c", cloud: "#ffcbac" }  // Coral Sunset
+  ];
+
+  /* ==========================================================================
+     GAME CANVAS & ENGINE VARIABLES
+     ========================================================================== */
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  let DPR = Math.min(window.devicePixelRatio || 1, 2);
+  let W = 0, H = 0;
+
+  // Level & Game State
+  let currentLevelIndex = 0;
+  let gameState = "PLAYING"; // PLAYING, WIN, DEAD
+  let isPointerDown = false;
+  let animTime = 0;
+  let dashedRingAngle = 0;
+
+  // Level Progression Objects
+  let levelLength = 2200;
+  let startPos = { x: 100, y: 300 };
+  let finishX = 2000;
+  let hooks = [];
+  let trampolines = [];
+  let hazards = [];
+  let targetHook = null;
+  let particles = [];
+  let cameraX = 0;
+
+  // Player Object & Dynamic Stickman Physics
+  const GRAVITY = 1500;
+  const player = {
+    x: 100,
+    y: 300,
+    vx: 380,
+    vy: 0,
+    radius: 12,
+    attached: false,
+    anchor: null,
+    ropeLength: 0,
+    angle: 0,
+    angularVelocity: 0,
+    bodyAngle: 0,
+    trail: []
+  };
+
+  /* ==========================================================================
+     UI ELEMENTS & EVENT LISTENERS
+     ========================================================================== */
+  const currentLevelText = document.getElementById("currentLevelText");
+  const nextLevelText = document.getElementById("nextLevelText");
+  const progressBarFill = document.getElementById("progress-bar-fill");
+  const progressPlayerDot = document.getElementById("progress-player-dot");
+  const restartBtn = document.getElementById("restartBtn");
+  const homeBtn = document.getElementById("homeBtn");
+  const winModal = document.getElementById("winModal");
+  const nextLevelBtn = document.getElementById("nextLevelBtn");
+  const levelModal = document.getElementById("levelModal");
+  const levelGrid = document.getElementById("levelGrid");
+  const closeLevelModalBtn = document.getElementById("closeLevelModalBtn");
+  const instructionHint = document.getElementById("instruction-hint");
+
+  function resizeCanvas() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.floor(W * DPR);
+    canvas.height = Math.floor(H * DPR);
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
+
+  /* ==========================================================================
+     PROCEDURAL LEVEL GENERATOR
+     ========================================================================== */
+  function generateLevel(levelIdx) {
+    hooks = [];
+    trampolines = [];
+    particles = [];
+    
+    // Determine level length and parameters
+    levelLength = 2000 + levelIdx * 350;
+    startPos = { x: 120, y: H * 0.45 };
+    finishX = levelLength - 180;
+
+    player.x = startPos.x;
+    player.y = startPos.y;
+    player.vx = 320;
+    player.vy = -50;
+    player.attached = false;
+    player.anchor = null;
+    player.trail = [];
+    player.bodyAngle = 0;
+
+    let theme = THEMES[levelIdx % THEMES.length];
+    document.documentElement.style.setProperty('--bg-theme', theme.skyTop);
+
+    // Procedurally layout Hooks and Trampolines
+    let currX = 280;
+    let lastY = H * 0.35;
+
+    while (currX < finishX - 150) {
+      let spacing = 180 + Math.random() * 100;
+      currX += spacing;
+
+      let hookY = H * 0.22 + Math.random() * (H * 0.32);
+      hooks.push({
+        x: currX,
+        y: hookY,
+        radius: 14
+      });
+
+      // Add trampolines underneath high gaps or periodically
+      if (Math.random() < 0.65 || currX > finishX - 300) {
+        let trampX = currX + (Math.random() * 60 - 30);
+        let trampY = Math.min(H - 90, hookY + 220 + Math.random() * 60);
+        trampolines.push({
+          x: trampX - 45,
+          y: trampY,
+          w: 90,
+          h: 18,
+          squish: 0
+        });
+      }
+
+      lastY = hookY;
+    }
+
+    // Safety trampoline near start
+    trampolines.unshift({
+      x: startPos.x - 40,
+      y: startPos.y + 120,
+      w: 120,
+      h: 18,
+      squish: 0
+    });
+
+    // Update UI Progress Text
+    currentLevelText.textContent = levelIdx + 1;
+    nextLevelText.textContent = levelIdx + 2;
+    updateProgressBar(0);
+
+    gameState = "PLAYING";
+    winModal.classList.remove("active");
+    levelModal.classList.remove("active");
+  }
+
+  /* ==========================================================================
+     INPUT HANDLING (Pointer / Mouse / Touch / Keyboard)
+     ========================================================================== */
+  function onPointerDown(e) {
+    if (e && e.target.closest && e.target.closest("#top-ui, .modal-overlay")) return;
+    isPointerDown = true;
+    instructionHint.style.opacity = "0";
+
+    if (gameState === "DEAD") {
+      generateLevel(currentLevelIndex);
+      return;
+    }
+
+    if (gameState === "PLAYING" && !player.attached) {
+      attachHook();
+    }
+  }
+
+  function onPointerUp(e) {
+    isPointerDown = false;
+    if (player.attached) {
+      detachHook();
+    }
+  }
+
+  window.addEventListener("pointerdown", onPointerDown);
+  window.addEventListener("pointerup", onPointerUp);
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+      e.preventDefault();
+      if (!isPointerDown) {
+        onPointerDown();
+      }
+    }
+  });
+  window.addEventListener("keyup", (e) => {
+    if (e.code === "Space") {
+      onPointerUp();
+    }
+  });
+
+  restartBtn.addEventListener("click", () => generateLevel(currentLevelIndex));
+  homeBtn.addEventListener("click", openLevelModal);
+  nextLevelBtn.addEventListener("click", () => {
+    currentLevelIndex++;
+    generateLevel(currentLevelIndex);
+  });
+  closeLevelModalBtn.addEventListener("click", () => levelModal.classList.remove("active"));
+
+  function openLevelModal() {
+    levelGrid.innerHTML = "";
+    // Display 50 numbered levels with scaled difficulty labels
+    for (let i = 0; i < 50; i++) {
+      let node = document.createElement("div");
+      node.className = "level-node" + (i === currentLevelIndex ? " current" : "");
+      
+      let numSpan = document.createElement("span");
+      numSpan.textContent = i + 1;
+      node.appendChild(numSpan);
+
+      let diffTag = document.createElement("span");
+      diffTag.className = "diff-indicator";
+      if (i < 5) diffTag.textContent = "EASY";
+      else if (i < 15) diffTag.textContent = "MEDIUM";
+      else if (i < 30) diffTag.textContent = "HARD";
+      else diffTag.textContent = "EXPERT";
+      node.appendChild(diffTag);
+
+      node.onclick = () => {
+        currentLevelIndex = i;
+        generateLevel(currentLevelIndex);
+      };
+      levelGrid.appendChild(node);
+    }
+    levelModal.classList.add("active");
+  }
+
+  function showLevelBanner(levelIdx) {
+    const banner = document.getElementById("level-banner");
+    banner.textContent = "LEVEL " + (levelIdx + 1);
+    banner.classList.add("show");
+    setTimeout(() => {
+      banner.classList.remove("show");
+    }, 1800);
+  }
+
+  /* ==========================================================================
+     PROCEDURAL LEVEL GENERATOR (SCALED DIFFICULTY & LONGER PATHS)
+     ========================================================================== */
+  function generateLevel(levelIdx) {
+    hooks = [];
+    trampolines = [];
+    hazards = [];
+    particles = [];
+    
+    // Level length grows significantly with level number (Longer & Tougher)
+    levelLength = 3200 + levelIdx * 650;
+    startPos = { x: 120, y: H * 0.45 };
+    finishX = levelLength - 200;
+
+    player.x = startPos.x;
+    player.y = startPos.y;
+    player.vx = 340;
+    player.vy = -50;
+    player.attached = false;
+    player.anchor = null;
+    player.trail = [];
+    player.bodyAngle = 0;
+
+    let theme = THEMES[levelIdx % THEMES.length];
+    document.documentElement.style.setProperty('--bg-theme', theme.skyTop);
+
+    // Progressive Difficulty Parameters
+    let baseSpacing = 180 + Math.min(levelIdx * 8, 140); // Larger gaps between hooks
+    let spacingVar = 60 + Math.min(levelIdx * 10, 180);
+    let movingHookChance = Math.min(levelIdx * 0.08, 0.65); // Moving hooks on higher levels
+    let trampolineChance = Math.max(0.18, 0.75 - levelIdx * 0.025); // Fewer safety trampolines
+    let hazardChance = levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.12, 0.55) : 0; // Spikes / red danger zones
+
+    let currX = 280;
+
+    while (currX < finishX - 220) {
+      let spacing = baseSpacing + Math.random() * spacingVar;
+      currX += spacing;
+
+      // Higher vertical variance for tougher swing angles
+      let heightVariance = Math.min(0.22 + levelIdx * 0.015, 0.42);
+      let hookY = H * (0.18 + Math.random() * heightVariance);
+
+      let isMoving = Math.random() < movingHookChance;
+      let moveSpeed = 40 + Math.random() * (40 + Math.min(levelIdx * 10, 100));
+      let moveRange = 50 + Math.random() * 70;
+
+      hooks.push({
+        x: currX,
+        y: hookY,
+        baseY: hookY,
+        radius: 14,
+        isMoving: isMoving,
+        moveSpeed: moveSpeed,
+        moveRange: moveRange,
+        movePhase: Math.random() * Math.PI * 2
+      });
+
+      // Spawn red danger hazards on tougher levels between gaps
+      if (hazardChance > 0 && Math.random() < hazardChance && currX < finishX - 400) {
+        let hazWidth = 70 + Math.random() * (60 + Math.min(levelIdx * 5, 80));
+        let hazY = hookY + 140 + Math.random() * 80;
+        if (hazY < H - 80) {
+          hazards.push({
+            x: currX - hazWidth / 2,
+            y: hazY,
+            w: hazWidth,
+            h: 22
+          });
+        }
+      }
+
+      // Add trampolines (smaller and less frequent in later levels)
+      if (Math.random() < trampolineChance || currX > finishX - 350) {
+        let trampX = currX + (Math.random() * 60 - 30);
+        let trampY = Math.min(H - 80, hookY + 230 + Math.random() * 70);
+        let trampW = Math.max(50, 95 - levelIdx * 1.5); // Narrower pads
+        trampolines.push({
+          x: trampX - trampW / 2,
+          y: trampY,
+          w: trampW,
+          h: 18,
+          squish: 0
+        });
+      }
+    }
+
+    // Safety trampoline near start
+    trampolines.unshift({
+      x: startPos.x - 40,
+      y: startPos.y + 120,
+      w: 120,
+      h: 18,
+      squish: 0
+    });
+
+    // Update UI Progress Text
+    currentLevelText.textContent = levelIdx + 1;
+    nextLevelText.textContent = levelIdx + 2;
+    updateProgressBar(0);
+    showLevelBanner(levelIdx);
+
+    gameState = "PLAYING";
+    winModal.classList.remove("active");
+    levelModal.classList.remove("active");
+  }
+
+  /* ==========================================================================
+     INPUT HANDLING (Pointer / Mouse / Touch / Keyboard)
+     ========================================================================== */
+  function findClosestAheadHook() {
+    let best = null;
+    let minDistance = Infinity;
+
+    for (const h of hooks) {
+      let dx = h.x - player.x;
+      let dy = h.y - player.y;
+      let dist = Math.hypot(dx, dy);
+
+      // Prefer hooks ahead of the player or directly within reach
+      if (dx > -60 && dist < 450 && dist < minDistance) {
+        minDistance = dist;
+        best = h;
+      }
+    }
+    return best;
+  }
+
+  function attachHook() {
+    let target = findClosestAheadHook();
+    if (!target) return;
+
+    let dx = player.x - target.x;
+    let dy = player.y - target.y;
+    let rope = Math.hypot(dx, dy);
+    let angle = Math.atan2(dx, dy);
+
+    // Tangential angular velocity from linear velocity
+    let angVel = (player.vx * Math.cos(angle) - player.vy * Math.sin(angle)) / Math.max(rope, 40);
+
+    player.attached = true;
+    player.anchor = target;
+    player.ropeLength = rope;
+    player.angle = angle;
+    player.angularVelocity = angVel;
+
+    spawnParticles(player.x, player.y, "#ffffff", 8);
+  }
+
+  function detachHook() {
+    if (!player.attached) return;
+
+    // Convert angular pendulum velocity back into linear release velocity
+    let a = player.angle;
+    let av = player.angularVelocity;
+    let r = player.ropeLength;
+
+    // Slight momentum boost on release
+    player.vx = r * Math.cos(a) * av * 1.08;
+    player.vy = -r * Math.sin(a) * av * 1.08;
+
+    player.attached = false;
+    player.anchor = null;
+  }
+
+  /* ==========================================================================
+     UPDATE LOOP
+     ========================================================================== */
+  let lastTime = performance.now();
+
+  function update(dt) {
+    animTime += dt;
+    dashedRingAngle += dt * 3;
+
+    // Update moving hooks position
+    for (let h of hooks) {
+      if (h.isMoving) {
+        h.movePhase += dt * (h.moveSpeed / 40);
+        h.y = h.baseY + Math.sin(h.movePhase) * h.moveRange;
+      }
+    }
+
+    if (gameState === "PLAYING") {
+      // Find candidate hook for visual dashed highlight ring
+      targetHook = findClosestAheadHook();
+
+      if (player.attached) {
+        // Pendulum Physics
+        let r = player.ropeLength;
+        let angAcc = -(GRAVITY / r) * Math.sin(player.angle);
+
+        player.angularVelocity += angAcc * dt;
+        player.angularVelocity *= 0.9992; // tiny air resistance damping
+        player.angle += player.angularVelocity * dt;
+
+        player.x = player.anchor.x + r * Math.sin(player.angle);
+        player.y = player.anchor.y + r * Math.cos(player.angle);
+
+        player.vx = r * Math.cos(player.angle) * player.angularVelocity;
+        player.vy = -r * Math.sin(player.angle) * player.angularVelocity;
+        player.bodyAngle = player.angle;
+
+        // Auto-hook switch when holding pointer down
+        if (!isPointerDown) {
+          detachHook();
+        }
+      } else {
+        // Freefall Physics
+        player.vy += GRAVITY * dt;
+        player.x += player.vx * dt;
+        player.y += player.vy * dt;
+
+        // Air damping on forward push
+        if (player.vx < 260) player.vx += 100 * dt;
+
+        player.bodyAngle = Math.atan2(player.vy, player.vx);
+
+        if (isPointerDown) {
+          attachHook();
+        }
+      }
+
+      // Trail recording
+      player.trail.push({ x: player.x, y: player.y });
+      if (player.trail.length > 8) player.trail.shift();
+
+      // Trampoline collisions
+      for (let t of trampolines) {
+        if (t.squish > 0) t.squish = Math.max(0, t.squish - dt * 4);
+
+        if (
+          player.vy > 0 &&
+          player.x >= t.x - 10 &&
+          player.x <= t.x + t.w + 10 &&
+          player.y + player.radius >= t.y &&
+          player.y - player.radius <= t.y + t.h
+        ) {
+          // Bounce!
+          player.vy = -Math.max(780, Math.abs(player.vy) * 0.95);
+          player.vx = Math.max(player.vx * 1.05, 360);
+          player.y = t.y - player.radius;
+          t.squish = 1;
+          spawnParticles(player.x, t.y, "#ffffff", 12);
+          if (player.attached) detachHook();
+        }
+      }
+
+      // Hazard collisions (Spikes / Danger Zones)
+      for (let hz of hazards) {
+        if (
+          player.x + player.radius > hz.x &&
+          player.x - player.radius < hz.x + hz.w &&
+          player.y + player.radius > hz.y &&
+          player.y - player.radius < hz.y + hz.h
+        ) {
+          // Player hit hazard!
+          spawnParticles(player.x, player.y, "#ff4444", 25);
+          gameState = "DEAD";
+          setTimeout(() => {
+            if (gameState === "DEAD") generateLevel(currentLevelIndex);
+          }, 450);
+          break;
+        }
+      }
+
+      // Check Fall Out / Death
+      if (player.y > H + 100) {
+        gameState = "DEAD";
+        setTimeout(() => {
+          if (gameState === "DEAD") generateLevel(currentLevelIndex);
+        }, 500);
+      }
+
+      // Check Victory
+      if (player.x >= finishX) {
+        gameState = "WIN";
+        spawnParticles(finishX, H * 0.4, "#ffffff", 40);
+        setTimeout(() => {
+          winModal.classList.add("active");
+        }, 400);
+      }
+
+      // Camera Tracking
+      let targetCamX = player.x - W * 0.28;
+      cameraX += (targetCamX - cameraX) * 0.1;
+
+      // Update Top Progress Bar
+      let progress = Math.min(1, Math.max(0, (player.x - startPos.x) / (finishX - startPos.x)));
+      updateProgressBar(progress);
+    }
+
+    // Update particles
+    for (let p of particles) {
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.life -= dt;
+    }
+    particles = particles.filter((p) => p.life > 0);
+  }
+
+  function updateProgressBar(progress) {
+    let pct = (progress * 100).toFixed(1) + "%";
+    progressBarFill.style.width = pct;
+    progressPlayerDot.style.left = pct;
+  }
+
+  function spawnParticles(x, y, color, count) {
+    for (let i = 0; i < count; i++) {
+      let ang = Math.random() * Math.PI * 2;
+      let spd = 50 + Math.random() * 220;
+      particles.push({
+        x: x,
+        y: y,
+        vx: Math.cos(ang) * spd,
+        vy: Math.sin(ang) * spd,
+        life: 0.4 + Math.random() * 0.4,
+        maxLife: 0.8,
+        color: color
+      });
+    }
+  }
+
+  /* ==========================================================================
+     RENDER LOOP & VISUAL STYLING
+     ========================================================================== */
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    let theme = THEMES[currentLevelIndex % THEMES.length];
+
+    // 1. Draw Sky Gradient
+    let skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+    skyGrad.addColorStop(0, theme.skyTop);
+    skyGrad.addColorStop(1, theme.skyBottom);
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // 2. Draw Soft Clouds Background (Parallax)
+    drawClouds(theme.cloud);
+
+    ctx.save();
+    ctx.translate(-cameraX, 0);
+
+    // 3. Draw Finish Line Flag
+    drawFinishLine();
+
+    // 4. Draw Trampolines
+    drawTrampolines();
+
+    // 4b. Draw Red Hazard Danger Bars
+    drawHazards();
+
+    // 5. Draw Hooks
+    drawHooks();
+
+    // 6. Draw Grapple Rope
+    if (player.attached && player.anchor) {
+      ctx.beginPath();
+      ctx.moveTo(player.anchor.x, player.anchor.y);
+      ctx.lineTo(player.x, player.y);
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = "round";
+      ctx.stroke();
+    }
+
+    // 7. Draw Player Trail
+    for (let i = 0; i < player.trail.length; i++) {
+      let p = player.trail[i];
+      let alpha = (i / player.trail.length) * 0.35;
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, player.radius * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 8. Draw Stickman Character
+    drawStickman();
+
+    // 9. Draw Particles
+    for (let p of particles) {
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.life / p.maxLife;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
+  }
+
+  function drawClouds(cloudColor) {
+    ctx.fillStyle = cloudColor;
+    ctx.globalAlpha = 0.5;
+
+    // Layered cloud bumps at the bottom
+    let cloudCamX = cameraX * 0.25;
+    ctx.beginPath();
+    let step = 140;
+    let startI = Math.floor(cloudCamX / step) - 1;
+    let endI = startI + Math.ceil(W / step) + 3;
+
+    ctx.moveTo(-50, H);
+    for (let i = startI; i <= endI; i++) {
+      let cx = i * step - cloudCamX;
+      let cy = H - 120 + Math.sin(i * 1.5) * 20;
+      ctx.quadraticCurveTo(cx, cy - 60, cx + step / 2, cy);
+    }
+    ctx.lineTo(W + 50, H);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawHooks() {
+    for (let h of hooks) {
+      let isCurrentAnchor = player.attached && player.anchor === h;
+      let isTargetCandidate = !player.attached && targetHook === h;
+
+      // Vertical movement motion indicator track for moving hooks
+      if (h.isMoving) {
+        ctx.beginPath();
+        ctx.moveTo(h.x, h.baseY - h.moveRange);
+        ctx.lineTo(h.x, h.baseY + h.moveRange);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Dashed outer selection ring
+      if (isCurrentAnchor || isTargetCandidate) {
+        ctx.save();
+        ctx.translate(h.x, h.y);
+        ctx.rotate(dashedRingAngle);
+        ctx.beginPath();
+        ctx.arc(0, 0, 24, 0, Math.PI * 2);
+        ctx.setLineDash([6, 6]);
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Outer Ring
+      ctx.beginPath();
+      ctx.arc(h.x, h.y, h.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = h.isMoving ? "#ffea79" : "#ffffff";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Inner Solid Pin Center
+      ctx.beginPath();
+      ctx.arc(h.x, h.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = h.isMoving ? "#ffea79" : "#ffffff";
+      ctx.fill();
+    }
+  }
+
+  function drawHazards() {
+    for (let hz of hazards) {
+      ctx.save();
+      // Danger Red Pulsing Bar
+      let glow = Math.sin(animTime * 8) * 0.2 + 0.8;
+      ctx.fillStyle = `rgba(235, 60, 60, ${glow})`;
+      roundRect(ctx, hz.x, hz.y, hz.w, hz.h, 6);
+      ctx.fill();
+
+      // Danger Stripes
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let sx = hz.x + 6; sx < hz.x + hz.w - 6; sx += 12) {
+        ctx.moveTo(sx, hz.y + 4);
+        ctx.lineTo(sx + 6, hz.y + hz.h - 4);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawTrampolines() {
+    for (let t of trampolines) {
+      ctx.save();
+      ctx.translate(t.x + t.w / 2, t.y + t.h / 2);
+
+      let squishY = 1 - t.squish * 0.45;
+      let squishX = 1 + t.squish * 0.2;
+      ctx.scale(squishX, squishY);
+
+      // Pill shape body
+      ctx.beginPath();
+      roundRect(ctx, -t.w / 2, -t.h / 2, t.w, t.h, 9);
+      ctx.fillStyle = "#e0e0e0";
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#ffffff";
+      ctx.stroke();
+
+      // Elastic top pad accent line
+      ctx.beginPath();
+      ctx.moveTo(-t.w / 2 + 8, -t.h / 2 + 3);
+      ctx.lineTo(t.w / 2 - 8, -t.h / 2 + 3);
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.stroke();
+
+      ctx.restore();
+    }
+  }
+
+  function drawFinishLine() {
+    let fx = finishX;
+    let topY = H * 0.15;
+    let botY = H - 60;
+
+    // Checkered Banner Line
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(fx, topY);
+    ctx.lineTo(fx, botY);
+    ctx.stroke();
+
+    // Checkered squares along the post
+    let squareSize = 16;
+    for (let y = topY; y < botY; y += squareSize) {
+      let isWhite = Math.floor(y / squareSize) % 2 === 0;
+      ctx.fillStyle = isWhite ? "#ffffff" : "#333333";
+      ctx.fillRect(fx - 8, y, squareSize, squareSize);
+    }
+  }
+
+  function drawStickman() {
+    ctx.save();
+    ctx.translate(player.x, player.y);
+
+    let rot = player.attached ? player.angle : player.bodyAngle * 0.5;
+    ctx.rotate(rot);
+
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    // Animated leg/arm positions depending on velocity
+    let cycle = Math.sin(animTime * 15);
+    let legBend = player.attached ? 6 : cycle * 8;
+
+    // Head
+    ctx.beginPath();
+    ctx.arc(0, -14, 7, 0, Math.PI * 2);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+
+    // Torso
+    ctx.beginPath();
+    ctx.moveTo(0, -7);
+    ctx.lineTo(0, 8);
+    ctx.stroke();
+
+    // Arms
+    ctx.beginPath();
+    if (player.attached) {
+      // Reaching up to hook
+      ctx.moveTo(0, -4);
+      ctx.lineTo(-6, -16);
+      ctx.moveTo(0, -4);
+      ctx.lineTo(6, -16);
+    } else {
+      ctx.moveTo(0, -4);
+      ctx.lineTo(-10, 2 + cycle * 4);
+      ctx.moveTo(0, -4);
+      ctx.lineTo(10, 2 - cycle * 4);
+    }
+    ctx.stroke();
+
+    // Legs
+    ctx.beginPath();
+    ctx.moveTo(0, 8);
+    ctx.lineTo(-7 - legBend, 20);
+    ctx.moveTo(0, 8);
+    ctx.lineTo(7 + legBend, 20);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function roundRect(context, x, y, w, h, r) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    context.moveTo(x + r, y);
+    context.arcTo(x + w, y, x + w, y + h, r);
+    context.arcTo(x + w, y + h, x, y + h, r);
+    context.arcTo(x, y + h, x, y, r);
+    context.arcTo(x, y, x + w, y, r);
+    context.closePath();
+  }
+
+  /* ==========================================================================
+     MAIN GAME LOOP
+     ========================================================================== */
+  function gameLoop(now) {
+    let dt = (now - lastTime) / 1000;
+    lastTime = now;
+    dt = Math.min(dt, 0.033); // Clamp dt to avoid physics frame jumps
+
+    update(dt);
+    draw();
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  // Initialize Level 1
+  generateLevel(currentLevelIndex);
+  requestAnimationFrame(gameLoop);
+
+})();
+</script>
+</body>
+</html>
