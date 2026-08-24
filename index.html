@@ -721,6 +721,9 @@
   let particles = [];
   let cameraX = 0;
 
+  let lastAttachedHook = null;
+  let detachCooldown = 0;
+
   const GRAVITY = 1550;
   const player = {
     x: 120,
@@ -943,6 +946,8 @@
     trampolines = [];
     hazards = [];
     particles = [];
+    lastAttachedHook = null;
+    detachCooldown = 0;
 
     levelLength = 3000 + levelIdx * 600;
     startPos = { x: 120, y: H * 0.45 };
@@ -960,18 +965,18 @@
     let baseSpacing = 180 + Math.min(levelIdx * 8, 140);
     let movingHookChance = Math.min(levelIdx * 0.08, 0.65);
     let trampolineChance = Math.max(0.2, 0.75 - levelIdx * 0.02);
-    let hazardChance = levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.12, 0.5) : 0;
+    let hazardChance = levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.1, 0.4) : 0;
 
     let currX = 280;
 
     while (currX < finishX - 250) {
-      let spacing = baseSpacing + Math.random() * 80;
+      let spacing = baseSpacing + Math.random() * 70;
       currX += spacing;
 
       let hookY = H * (0.2 + Math.random() * 0.35);
       let isMoving = Math.random() < movingHookChance;
       let moveSpeed = 40 + Math.random() * (40 + Math.min(levelIdx * 10, 80));
-      let moveRange = 45 + Math.random() * 65;
+      let moveRange = 45 + Math.random() * 60;
 
       hooks.push({
         x: currX,
@@ -984,18 +989,19 @@
         movePhase: Math.random() * Math.PI * 2
       });
 
+      // Spawn hazards at safer offsets to maintain playability
       if (hazardChance > 0 && Math.random() < hazardChance && currX < finishX - 400) {
-        let hazW = 70 + Math.random() * 70;
-        let hazY = hookY + 140 + Math.random() * 70;
-        if (hazY < H - 80) {
-          hazards.push({ x: currX - hazW / 2, y: hazY, w: hazW, h: 22 });
+        let hazW = 60 + Math.random() * 50;
+        let hazY = hookY + 180 + Math.random() * 40;
+        if (hazY < H - 90) {
+          hazards.push({ x: currX - hazW / 2, y: hazY, w: hazW, h: 20 });
         }
       }
 
       if (Math.random() < trampolineChance || currX > finishX - 350) {
-        let trampX = currX + (Math.random() * 60 - 30);
-        let trampY = Math.min(H - 80, hookY + 230 + Math.random() * 60);
-        let trampW = Math.max(50, 90 - levelIdx * 1.2);
+        let trampX = currX + (Math.random() * 40 - 20);
+        let trampY = Math.min(H - 80, hookY + 230 + Math.random() * 50);
+        let trampW = Math.max(55, 95 - levelIdx * 1.1);
         trampolines.push({ x: trampX - trampW / 2, y: trampY, w: trampW, h: 18, squish: 0 });
       }
     }
@@ -1029,7 +1035,7 @@
       let dy = h.y - player.y;
       let dist = Math.hypot(dx, dy);
 
-      if (dx > -60 && dist < 460 && dist < minDistance) {
+      if (dx > -50 && dist < 480 && dist < minDistance) {
         minDistance = dist;
         best = h;
       }
@@ -1038,8 +1044,11 @@
   }
 
   function attachHook() {
+    if (detachCooldown > 0) return;
+
     let target = findClosestAheadHook();
     if (!target) return;
+    if (target === lastAttachedHook && (player.x - target.x) < 30) return;
 
     let dx = player.x - target.x;
     let dy = player.y - target.y;
@@ -1053,6 +1062,7 @@
     player.ropeLength = rope;
     player.angle = angle;
     player.angularVelocity = angVel;
+    lastAttachedHook = target;
 
     spawnParticles(player.x, player.y, "#ffffff", 8);
     playHookSound();
@@ -1070,6 +1080,7 @@
 
     player.attached = false;
     player.anchor = null;
+    detachCooldown = 0.12; // Brief re-attach prevention window
   }
 
   function handleInputDown(e) {
@@ -1116,10 +1127,116 @@
   hudMenuBtn.onclick = () => openLevelSelectScreen();
 
   let lastTime = performance.now();
+  let accumTime = 0;
+  const FIXED_DT = 1 / 120; // 120Hz physics sub-stepping
+
+  function stepPhysics(dt) {
+    if (appState !== "PLAYING") return;
+
+    targetHook = findClosestAheadHook();
+
+    if (player.attached) {
+      let r = player.ropeLength;
+      let angAcc = -(GRAVITY / r) * Math.sin(player.angle);
+
+      player.angularVelocity += angAcc * dt;
+      player.angularVelocity *= 0.9994;
+      player.angle += player.angularVelocity * dt;
+
+      player.x = player.anchor.x + r * Math.sin(player.angle);
+      player.y = player.anchor.y + r * Math.cos(player.angle);
+
+      player.vx = r * Math.cos(player.angle) * player.angularVelocity;
+      player.vy = -r * Math.sin(player.angle) * player.angularVelocity;
+      player.bodyAngle = player.angle;
+
+      if (!isPointerDown) {
+        detachHook();
+      }
+    } else {
+      player.vy += GRAVITY * dt;
+      player.x += player.vx * dt;
+      player.y += player.vy * dt;
+
+      if (player.vx < 260) player.vx += 120 * dt;
+      player.bodyAngle = Math.atan2(player.vy, player.vx);
+
+      if (isPointerDown) {
+        attachHook();
+      }
+    }
+
+    player.trail.push({ x: player.x, y: player.y });
+    if (player.trail.length > 8) player.trail.shift();
+
+    for (let t of trampolines) {
+      if (t.squish > 0) t.squish = Math.max(0, t.squish - dt * 4);
+
+      if (
+        player.vy > 0 &&
+        player.x >= t.x - 12 &&
+        player.x <= t.x + t.w + 12 &&
+        player.y + player.radius >= t.y &&
+        player.y - player.radius <= t.y + t.h
+      ) {
+        player.vy = -Math.max(780, Math.abs(player.vy) * 0.95);
+        player.vx = Math.min(Math.max(player.vx * 1.05, 360), 820);
+        player.y = t.y - player.radius;
+        t.squish = 1;
+        spawnParticles(player.x, t.y, "#ffffff", 14);
+        playBounceSound();
+        if (player.attached) detachHook();
+      }
+    }
+
+    for (let hz of hazards) {
+      if (
+        player.x + player.radius > hz.x &&
+        player.x - player.radius < hz.x + hz.w &&
+        player.y + player.radius > hz.y &&
+        player.y - player.radius < hz.y + hz.h
+      ) {
+        spawnParticles(player.x, player.y, "#ff4444", 25);
+        playFailSound();
+        appState = "DEAD";
+        setTimeout(() => {
+          if (appState === "DEAD") startLevel(currentLevelIdx);
+        }, 450);
+        break;
+      }
+    }
+
+    if (player.y > H + 120) {
+      playFailSound();
+      appState = "DEAD";
+      setTimeout(() => {
+        if (appState === "DEAD") startLevel(currentLevelIdx);
+      }, 500);
+    }
+
+    if (player.x >= finishX) {
+      appState = "WIN";
+      spawnParticles(finishX, H * 0.4, "#ffffff", 50);
+      playWinSound();
+
+      if (currentLevelIdx >= maxUnlockedLevel) {
+        maxUnlockedLevel = Math.min(49, currentLevelIdx + 1);
+      }
+      levelStarsMap[currentLevelIdx] = 3;
+      saveProgress();
+
+      selectedLevelIdx = Math.min(49, currentLevelIdx + 1);
+
+      setTimeout(() => {
+        openLevelSelectScreen();
+      }, 1000);
+    }
+  }
 
   function update(dt) {
     animTime += dt;
     ringRotation += dt * 3.5;
+    if (detachCooldown > 0) detachCooldown -= dt;
 
     for (let h of hooks) {
       if (h.isMoving) {
@@ -1129,108 +1246,19 @@
     }
 
     if (appState === "PLAYING") {
-      targetHook = findClosestAheadHook();
-
-      if (player.attached) {
-        let r = player.ropeLength;
-        let angAcc = -(GRAVITY / r) * Math.sin(player.angle);
-
-        player.angularVelocity += angAcc * dt;
-        player.angularVelocity *= 0.9993;
-        player.angle += player.angularVelocity * dt;
-
-        player.x = player.anchor.x + r * Math.sin(player.angle);
-        player.y = player.anchor.y + r * Math.cos(player.angle);
-
-        player.vx = r * Math.cos(player.angle) * player.angularVelocity;
-        player.vy = -r * Math.sin(player.angle) * player.angularVelocity;
-        player.bodyAngle = player.angle;
-
-        if (!isPointerDown) {
-          detachHook();
-        }
-      } else {
-        player.vy += GRAVITY * dt;
-        player.x += player.vx * dt;
-        player.y += player.vy * dt;
-
-        if (player.vx < 260) player.vx += 110 * dt;
-        player.bodyAngle = Math.atan2(player.vy, player.vx);
-
-        if (isPointerDown) {
-          attachHook();
-        }
+      // Sub-step physics integration for 60Hz/120Hz/144Hz stability
+      accumTime += dt;
+      let steps = 0;
+      while (accumTime >= FIXED_DT && steps < 4) {
+        stepPhysics(FIXED_DT);
+        accumTime -= FIXED_DT;
+        steps++;
       }
+      if (steps >= 4) accumTime = 0;
 
-      player.trail.push({ x: player.x, y: player.y });
-      if (player.trail.length > 8) player.trail.shift();
-
-      for (let t of trampolines) {
-        if (t.squish > 0) t.squish = Math.max(0, t.squish - dt * 4);
-
-        if (
-          player.vy > 0 &&
-          player.x >= t.x - 10 &&
-          player.x <= t.x + t.w + 10 &&
-          player.y + player.radius >= t.y &&
-          player.y - player.radius <= t.y + t.h
-        ) {
-          player.vy = -Math.max(800, Math.abs(player.vy) * 0.96);
-          player.vx = Math.max(player.vx * 1.05, 360);
-          player.y = t.y - player.radius;
-          t.squish = 1;
-          spawnParticles(player.x, t.y, "#ffffff", 14);
-          playBounceSound();
-          if (player.attached) detachHook();
-        }
-      }
-
-      for (let hz of hazards) {
-        if (
-          player.x + player.radius > hz.x &&
-          player.x - player.radius < hz.x + hz.w &&
-          player.y + player.radius > hz.y &&
-          player.y - player.radius < hz.y + hz.h
-        ) {
-          spawnParticles(player.x, player.y, "#ff4444", 25);
-          playFailSound();
-          appState = "DEAD";
-          setTimeout(() => {
-            if (appState === "DEAD") startLevel(currentLevelIdx);
-          }, 450);
-          break;
-        }
-      }
-
-      if (player.y > H + 120) {
-        playFailSound();
-        appState = "DEAD";
-        setTimeout(() => {
-          if (appState === "DEAD") startLevel(currentLevelIdx);
-        }, 500);
-      }
-
-      if (player.x >= finishX) {
-        appState = "WIN";
-        spawnParticles(finishX, H * 0.4, "#ffffff", 50);
-        playWinSound();
-
-        if (currentLevelIdx >= maxUnlockedLevel) {
-          maxUnlockedLevel = Math.min(49, currentLevelIdx + 1);
-        }
-        levelStarsMap[currentLevelIdx] = 3;
-        saveProgress();
-
-        // Advance default selected level to the next level for the level selector menu
-        selectedLevelIdx = Math.min(49, currentLevelIdx + 1);
-
-        setTimeout(() => {
-          openLevelSelectScreen();
-        }, 1000);
-      }
-
+      // Exponential smooth camera lerp
       let targetCamX = player.x - W * 0.28;
-      cameraX += (targetCamX - cameraX) * 0.1;
+      cameraX += (targetCamX - cameraX) * (1 - Math.exp(-12 * dt));
 
       let progress = Math.min(1, Math.max(0, (player.x - startPos.x) / (finishX - startPos.x)));
       updateProgressBar(progress);
