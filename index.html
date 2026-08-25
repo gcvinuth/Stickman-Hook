@@ -131,14 +131,31 @@
     #level-modal-container {
       width: 92%;
       max-width: 860px;
+      height: 90vh;
+      height: 90dvh;
+      max-height: 900px;
       background: #141824;
       border: 3px solid #232a3d;
       border-radius: 24px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(32, 139, 152, 0.25);
-      padding: 20px;
+      padding: 18px 18px 14px;
       display: flex;
       flex-direction: column;
       position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 640px) {
+      #level-modal-container {
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+        max-width: none;
+        border-radius: 0;
+        border-width: 0;
+        padding: max(12px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
+      }
     }
 
     .modal-header {
@@ -146,7 +163,17 @@
       flex-direction: column;
       align-items: center;
       position: relative;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+
+    .modal-header .crumb {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #7effb5;
+      text-transform: uppercase;
+      margin-bottom: 2px;
     }
 
     .modal-header .title {
@@ -159,6 +186,10 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       filter: drop-shadow(0 3px 0 rgba(0,0,0,0.4));
+    }
+
+    @media (max-width: 640px) {
+      .modal-header .title { font-size: 1.5rem; }
     }
 
     .modal-header .stats-line {
@@ -195,9 +226,10 @@
       display: flex;
       gap: 10px;
       overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 18px;
+      padding: 4px 2px 10px;
+      margin-bottom: 8px;
       scrollbar-width: none;
+      flex-shrink: 0;
     }
 
     .world-tabs-container::-webkit-scrollbar {
@@ -205,149 +237,234 @@
     }
 
     .world-tab-btn {
-      flex: 1;
-      min-width: 140px;
-      padding: 10px 14px;
-      background: #1d2334;
-      border: 2px solid #2d364f;
-      border-radius: 20px;
-      color: #8ea1c8;
-      font-size: 0.9rem;
-      font-weight: 700;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .world-tab-btn.active-tab {
-      background: #142a30;
-      border-color: #38ef7d;
-      color: #38ef7d;
-      box-shadow: 0 0 15px rgba(56, 239, 125, 0.25);
-    }
-
-    .level-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    @media (max-width: 640px) {
-      .level-grid {
-        gap: 10px;
-      }
-      .modal-header .title {
-        font-size: 1.6rem;
-      }
-    }
-
-    .level-node-wrapper {
+      flex-shrink: 0;
+      width: 74px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
       cursor: pointer;
+      padding: 2px 0 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .level-circle {
+    .world-tab-btn .tab-icon-box {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #232a3d 0%, #1a2032 100%);
+      border: 2px solid #2d364f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 12px rgba(0,0,0,0.25);
+      transition: all 0.18s ease;
       position: relative;
-      width: 78px;
-      height: 78px;
-      border-radius: 50%;
+    }
+
+    @media (max-width: 640px) {
+      .world-tab-btn { width: 62px; }
+      .world-tab-btn .tab-icon-box { width: 48px; height: 48px; font-size: 1.4rem; border-radius: 14px; }
+    }
+
+    .world-tab-btn:active .tab-icon-box {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .world-tab-btn .tab-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #8ea1c8;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .world-tab-btn.active-tab .tab-icon-box {
+      background: linear-gradient(180deg, #eef0ff 0%, #d9deff 100%);
+      border-color: #a78bfa;
+      box-shadow: 0 4px 0 #6d28d9, 0 8px 16px rgba(124, 58, 237, 0.35);
+    }
+
+    .world-tab-btn.active-tab:active .tab-icon-box {
+      box-shadow: 0 1px 0 #6d28d9, 0 2px 8px rgba(124, 58, 237, 0.3);
+    }
+
+    .world-tab-btn.active-tab .tab-label {
+      color: #ffffff;
+    }
+
+    .world-tab-btn.active-tab .tab-label::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -6px;
+      transform: translateX(-50%);
+      width: 22px;
+      height: 3px;
+      border-radius: 2px;
+      background: #7c3aed;
+    }
+
+    /* ===== Winding Level Path ===== */
+    .level-path-scroll {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      border-radius: 16px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 60%), #0f1220;
+      border: 2px solid #1c2233;
+    }
+
+    .level-path-scroll::-webkit-scrollbar { width: 6px; }
+    .level-path-scroll::-webkit-scrollbar-thumb { background: #2d364f; border-radius: 4px; }
+
+    .path-line-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .level-path-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .path-node-wrapper {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translate(-50%, 0);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .path-node-wrapper.locked-node { cursor: default; }
+
+    .path-node {
+      width: 82px;
+      height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 640px) {
+      .path-node { width: 64px; height: 64px; }
+    }
+
+    .node-face {
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      border: 3px solid rgba(255,255,255,0.18);
+    }
+
+    .path-node-wrapper:active .node-face {
+      transform: rotate(45deg) translateY(7px);
+    }
+
+    .node-inner {
+      transform: rotate(-45deg);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      gap: 2px;
     }
 
-    @media (max-width: 640px) {
-      .level-circle {
-        width: 60px;
-        height: 60px;
-      }
+    /* Cleared node: purple 3D tile with check */
+    .path-node-wrapper.cleared-node .node-face {
+      background: linear-gradient(145deg, #a78bfa 0%, #7c3aed 100%);
+      box-shadow: 0 8px 0 #4c1d95, 0 12px 20px rgba(76, 29, 149, 0.4);
+    }
+    .path-node-wrapper.cleared-node:active .node-face {
+      box-shadow: 0 1px 0 #4c1d95, 0 3px 8px rgba(76, 29, 149, 0.3);
+    }
+    .path-node-wrapper.cleared-node .check-icn {
+      width: 32px; height: 32px; fill: #ffffff;
     }
 
-    /* Unlocked / Current Node Styling */
-    .level-circle.current-node {
+    /* Current node: blue 3D tile, pulsing */
+    .path-node-wrapper.current-node .node-face {
       background: linear-gradient(145deg, #3a97ff 0%, #0056cf 100%);
-      border: 4px solid #ffffff;
-      box-shadow: 0 0 25px rgba(58, 151, 255, 0.95), 0 0 10px rgba(255, 255, 255, 0.8);
-      animation: pulseGlow 2s infinite alternate;
+      border-color: #ffffff;
+      box-shadow: 0 8px 0 #003f99, 0 0 22px rgba(58, 151, 255, 0.85), 0 12px 20px rgba(0,0,0,0.3);
+      animation: pulseGlowDiamond 1.6s infinite alternate;
     }
-
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 18px rgba(58, 151, 255, 0.7); }
-      100% { box-shadow: 0 0 30px rgba(58, 151, 255, 1), 0 0 12px rgba(255, 255, 255, 0.9); }
+    .path-node-wrapper.current-node:active .node-face {
+      box-shadow: 0 1px 0 #003f99, 0 0 18px rgba(58, 151, 255, 0.7);
     }
-
-    .level-circle.unlocked-node {
-      background: linear-gradient(145deg, #2b334a 0%, #1e2436 100%);
-      border: 3px solid #3e4c6e;
+    @keyframes pulseGlowDiamond {
+      0% { box-shadow: 0 8px 0 #003f99, 0 0 16px rgba(58,151,255,0.6), 0 12px 20px rgba(0,0,0,0.3); }
+      100% { box-shadow: 0 8px 0 #003f99, 0 0 30px rgba(58,151,255,1), 0 0 14px rgba(255,255,255,0.6); }
     }
-
-    .level-circle.locked-node {
-      background: linear-gradient(145deg, #d8dce8 0%, #b8becf 100%);
-      border: 3px solid #eef2fd;
-      opacity: 0.95;
-    }
-
-    .level-circle .level-num-text {
+    .path-node-wrapper.current-node .level-num-text {
+      color: #ffffff;
       font-family: 'Montserrat', sans-serif;
       font-weight: 900;
-      font-size: 2rem;
-      line-height: 1;
+      font-size: 1.6rem;
+    }
+
+    /* Locked node: flat grey tile with lock */
+    .path-node-wrapper.locked-node .node-face {
+      background: linear-gradient(145deg, #2b334a 0%, #1e2436 100%);
+      border-color: #3e4c6e;
+      box-shadow: 0 6px 0 #10141f, 0 8px 14px rgba(0,0,0,0.3);
+    }
+    .path-node-wrapper.locked-node .lock-icn {
+      width: 26px; height: 26px; fill: #5b6685;
     }
 
     @media (max-width: 640px) {
-      .level-circle .level-num-text {
-        font-size: 1.4rem;
-      }
+      .path-node-wrapper.current-node .level-num-text { font-size: 1.25rem; }
+      .path-node-wrapper.cleared-node .check-icn { width: 24px; height: 24px; }
+      .path-node-wrapper.locked-node .lock-icn { width: 20px; height: 20px; }
     }
 
-    .level-circle.current-node .level-num-text {
-      color: #ffffff;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-    }
-
-    .level-circle.locked-node .level-num-text {
-      color: #4e5872;
-    }
-
-    .level-circle .stars-row {
+    .path-node-wrapper .stars-row {
       display: flex;
       gap: 2px;
       margin-top: 2px;
+      transform: none;
     }
 
-    .level-circle .star-icon {
-      font-size: 11px;
-      color: #9ba6be;
+    .path-node-wrapper .star-icon {
+      font-size: 10px;
+      color: #574a86;
     }
 
-    .level-circle.current-node .star-icon.filled {
+    .path-node-wrapper.cleared-node .star-icon.filled {
       color: #ffea00;
       filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
     }
 
-    .level-circle.locked-node .star-icon {
-      color: #79849e;
-    }
-
-    .level-circle .lock-icn {
-      width: 18px;
-      height: 18px;
-      fill: #4e5872;
-      margin-bottom: -2px;
-    }
-
     .level-node-label {
-      margin-top: 6px;
-      font-size: 0.75rem;
+      margin-top: 8px;
+      font-size: 0.72rem;
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
+      white-space: nowrap;
+      background: rgba(13, 17, 26, 0.55);
+      padding: 2px 10px;
+      border-radius: 10px;
     }
 
     .level-node-label.lbl-current {
@@ -362,12 +479,47 @@
       color: #38ef7d;
     }
 
+    /* Floating scroll-to-current FAB */
+    .scroll-fab {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #3ceb8b 0%, #15aa65 100%);
+      border: 3px solid #82ffb0;
+      box-shadow: 0 6px 0 #0d6e3e, 0 8px 18px rgba(40, 205, 86, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      transition: all 0.15s ease;
+      animation: fabBob 2.2s ease-in-out infinite alternate;
+    }
+    .scroll-fab:active {
+      transform: translateY(5px);
+      box-shadow: 0 1px 0 #0d6e3e, 0 2px 8px rgba(40, 205, 86, 0.3);
+    }
+    @keyframes fabBob {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-5px); }
+    }
+    .scroll-fab svg { width: 24px; height: 24px; fill: #ffffff; }
+
     .start-prompt-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-      margin-top: 4px;
+      gap: 8px;
+      margin-top: 10px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 640px) {
+      .start-prompt-container { margin-top: 8px; gap: 6px; }
+      .play-level-btn { padding: 13px 24px; font-size: 1.1rem; }
     }
 
     .start-prompt-text {
@@ -548,6 +700,7 @@
         
         <!-- Header Section -->
         <div class="modal-header">
+          <div class="crumb" id="modal-crumb">WORLD 1 • LEVELS 1-10</div>
           <div class="title">STICKMAN HOOK</div>
           <div class="stats-line" id="modal-stats-text">Unlocked: Level 1 / 50 • Total Stars: ⭐0</div>
           <button class="close-btn" id="modal-close-btn" title="Close Menu">
@@ -557,14 +710,20 @@
           </button>
         </div>
 
-        <!-- World Selector Scroll Tabs -->
+        <!-- World Selector Icon Tabs -->
         <div class="world-tabs-container" id="world-tabs-list">
           <!-- Dynamically generated tabs -->
         </div>
 
-        <!-- 5x2 Circular Level Buttons Grid -->
-        <div class="level-grid" id="level-grid-container">
-          <!-- Dynamically populated 10 level nodes -->
+        <!-- Winding, scrollable level path -->
+        <div class="level-path-scroll" id="level-path-scroll">
+          <svg class="path-line-svg" id="path-line-svg"></svg>
+          <div class="level-path-container" id="level-grid-container">
+            <!-- Dynamically populated diamond level nodes -->
+          </div>
+          <button class="scroll-fab" id="scroll-fab-btn" title="Jump to current level">
+            <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
+          </button>
         </div>
 
         <!-- Bottom Start Call to Action -->
@@ -699,6 +858,21 @@
   let DPR = Math.min(window.devicePixelRatio || 1, 2);
   let W = 0, H = 0;
 
+  // Haptic feedback helper — used across all interactive UI for a tactile feel
+  function haptic(pattern) {
+    try {
+      if (navigator.vibrate) navigator.vibrate(pattern || 12);
+    } catch (e) {}
+  }
+
+  const WORLDS = [
+    { id: 0, name: "World 1", icon: "🪝" },
+    { id: 1, name: "World 2", icon: "🌀" },
+    { id: 2, name: "World 3", icon: "🔥" },
+    { id: 3, name: "World 4", icon: "⚡" },
+    { id: 4, name: "World 5", icon: "🏆" }
+  ];
+
   // Level & Progress Persistence
   let currentLevelIdx = 0;
   let selectedLevelIdx = 0;
@@ -753,6 +927,10 @@
 
   const worldTabsList = document.getElementById("world-tabs-list");
   const levelGridContainer = document.getElementById("level-grid-container");
+  const levelPathScroll = document.getElementById("level-path-scroll");
+  const pathLineSvg = document.getElementById("path-line-svg");
+  const scrollFabBtn = document.getElementById("scroll-fab-btn");
+  const modalCrumb = document.getElementById("modal-crumb");
   const modalStatsText = document.getElementById("modal-stats-text");
   const modalCloseBtn = document.getElementById("modal-close-btn");
   const modalPlayBtn = document.getElementById("modal-play-btn");
@@ -792,122 +970,168 @@
 
   function renderWorldTabs() {
     worldTabsList.innerHTML = "";
-    const WORLDS = [
-      { id: 0, name: "World 1 (1-10)" },
-      { id: 1, name: "World 2 (11-20)" },
-      { id: 2, name: "World 3 (21-30)" },
-      { id: 3, name: "World 4 (31-40)" },
-      { id: 4, name: "World 5 (41-50)" }
-    ];
 
     WORLDS.forEach((w) => {
       let btn = document.createElement("button");
       btn.className = "world-tab-btn" + (w.id === activeWorldTab ? " active-tab" : "");
-      btn.textContent = w.name;
+      btn.innerHTML = `<span class="tab-icon-box">${w.icon}</span><span class="tab-label">${w.name}</span>`;
       btn.onclick = () => {
+        if (activeWorldTab === w.id) return;
+        haptic(10);
         activeWorldTab = w.id;
         renderWorldTabs();
         renderLevelGrid();
       };
       worldTabsList.appendChild(btn);
     });
+
+    let w = WORLDS[activeWorldTab];
+    modalCrumb.textContent = `${w.name.toUpperCase()} • LEVELS ${activeWorldTab * 10 + 1}-${activeWorldTab * 10 + 10}`;
   }
 
+  // Renders the current world's levels as a winding, scrollable 3D diamond path
+  // (Duolingo/Sololearn-style skill path) and draws the connecting road with SVG.
   function renderLevelGrid() {
     levelGridContainer.innerHTML = "";
     let startLvl = activeWorldTab * 10;
     let endLvl = startLvl + 10;
+    let count = endLvl - startLvl;
 
-    for (let i = startLvl; i < endLvl; i++) {
+    let isMobile = window.innerWidth <= 640;
+    let nodeSize = isMobile ? 64 : 82;
+    let vGap = isMobile ? 108 : 132;
+    let topPad = isMobile ? 50 : 60;
+    let containerWidth = levelPathScroll.clientWidth || 400;
+    let amplitude = Math.min(containerWidth * 0.30, isMobile ? 90 : 130);
+    let centerX = containerWidth / 2;
+
+    let points = [];
+    for (let n = 0; n < count; n++) {
+      let x = centerX + amplitude * Math.sin(n * 1.05 + 0.4);
+      let y = topPad + n * vGap;
+      points.push({ x, y });
+    }
+    let totalHeight = topPad * 2 + (count - 1) * vGap + nodeSize;
+    levelGridContainer.style.height = totalHeight + "px";
+
+    // Draw the winding road (base path + a green "cleared" progress overlay)
+    pathLineSvg.setAttribute("viewBox", `0 0 ${containerWidth} ${totalHeight}`);
+    pathLineSvg.setAttribute("preserveAspectRatio", "none");
+    pathLineSvg.style.height = totalHeight + "px";
+
+    let clearedUpto = -1;
+    for (let n = 0; n < count; n++) {
+      if (startLvl + n <= maxUnlockedLevel) clearedUpto = n;
+    }
+
+    function buildPathD(upToIdx) {
+      if (upToIdx <= 0) return "";
+      let d = `M ${points[0].x} ${points[0].y}`;
+      for (let n = 1; n <= upToIdx; n++) d += ` L ${points[n].x} ${points[n].y}`;
+      return d;
+    }
+
+    let fullD = buildPathD(count - 1);
+    let clearedD = buildPathD(clearedUpto);
+
+    pathLineSvg.innerHTML = `
+      <path d="${fullD}" fill="none" stroke="#252c42" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="${fullD}" fill="none" stroke="#31395a" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 20"/>
+      ${clearedD ? `<path d="${clearedD}" fill="none" stroke="#2ecf74" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
+    `;
+
+    for (let n = 0; n < count; n++) {
+      let i = startLvl + n;
       let isUnlocked = i <= maxUnlockedLevel;
       let isCurrent = i === selectedLevelIdx;
-
-      let wrapper = document.createElement("div");
-      wrapper.className = "level-node-wrapper";
-
-      let circle = document.createElement("div");
-      let nodeClass = "level-circle ";
-      if (isCurrent && isUnlocked) {
-        nodeClass += "current-node";
-      } else if (isUnlocked) {
-        nodeClass += "unlocked-node";
-      } else {
-        nodeClass += "locked-node";
-      }
-      circle.className = nodeClass;
-
       let starsCount = levelStarsMap[i] || 0;
 
-      if (isUnlocked) {
-        // Number
+      let wrapper = document.createElement("div");
+      let stateClass = isCurrent && isUnlocked ? "current-node" : (isUnlocked ? "cleared-node" : "locked-node");
+      wrapper.className = "path-node-wrapper " + stateClass;
+      wrapper.style.left = points[n].x + "px";
+      wrapper.style.top = points[n].y + "px";
+      wrapper.dataset.levelIdx = i;
+
+      let node = document.createElement("div");
+      node.className = "path-node";
+
+      let face = document.createElement("div");
+      face.className = "node-face";
+
+      let inner = document.createElement("div");
+      inner.className = "node-inner";
+
+      if (isCurrent && isUnlocked) {
         let numText = document.createElement("div");
         numText.className = "level-num-text";
         numText.textContent = i + 1;
-        circle.appendChild(numText);
-
-        // Stars row
-        let starsRow = document.createElement("div");
-        starsRow.className = "stars-row";
-        for (let s = 1; s <= 3; s++) {
-          let starSpan = document.createElement("span");
-          starSpan.className = "star-icon" + (s <= starsCount ? " filled" : "");
-          starSpan.textContent = "★";
-          starsRow.appendChild(starSpan);
-        }
-        circle.appendChild(starsRow);
+        inner.appendChild(numText);
+      } else if (isUnlocked) {
+        let checkSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        checkSvg.setAttribute("class", "check-icn");
+        checkSvg.setAttribute("viewBox", "0 0 24 24");
+        checkSvg.innerHTML = `<path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/>`;
+        inner.appendChild(checkSvg);
       } else {
-        // Lock Icon
         let lockSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         lockSvg.setAttribute("class", "lock-icn");
         lockSvg.setAttribute("viewBox", "0 0 24 24");
         lockSvg.innerHTML = `<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>`;
-        circle.appendChild(lockSvg);
-
-        // Number below lock
-        let numText = document.createElement("div");
-        numText.className = "level-num-text";
-        numText.style.fontSize = "1.2rem";
-        numText.textContent = i + 1;
-        circle.appendChild(numText);
-
-        // Empty Stars row
-        let starsRow = document.createElement("div");
-        starsRow.className = "stars-row";
-        for (let s = 1; s <= 3; s++) {
-          let starSpan = document.createElement("span");
-          starSpan.className = "star-icon";
-          starSpan.textContent = "☆";
-          starsRow.appendChild(starSpan);
-        }
-        circle.appendChild(starsRow);
+        inner.appendChild(lockSvg);
       }
 
-      // Label underneath circle
+      face.appendChild(inner);
+      node.appendChild(face);
+      wrapper.appendChild(node);
+
+      // Stars row (only meaningful once unlocked)
+      let starsRow = document.createElement("div");
+      starsRow.className = "stars-row";
+      for (let s = 1; s <= 3; s++) {
+        let starSpan = document.createElement("span");
+        starSpan.className = "star-icon" + (isUnlocked && s <= starsCount ? " filled" : "");
+        starSpan.textContent = isUnlocked && s <= starsCount ? "★" : "☆";
+        starsRow.appendChild(starSpan);
+      }
+      wrapper.appendChild(starsRow);
+
+      // Label underneath node
       let label = document.createElement("div");
       if (isCurrent && isUnlocked) {
         label.className = "level-node-label lbl-current";
-        label.textContent = "CURRENT";
+        label.textContent = `LEVEL ${i + 1} • CURRENT`;
       } else if (isUnlocked) {
         label.className = "level-node-label lbl-cleared";
-        label.textContent = "CLEAR";
+        label.textContent = `LEVEL ${i + 1} • CLEAR`;
       } else {
         label.className = "level-node-label lbl-locked";
-        label.textContent = "LOCKED";
+        label.textContent = `LEVEL ${i + 1} • LOCKED`;
       }
-
-      wrapper.appendChild(circle);
       wrapper.appendChild(label);
 
       if (isUnlocked) {
         wrapper.onclick = () => {
+          haptic(isCurrent ? 8 : 16);
           selectedLevelIdx = i;
           renderLevelGrid();
           updateModalPlayBtnText();
         };
+      } else {
+        wrapper.onclick = () => haptic([8, 40, 8]);
       }
 
       levelGridContainer.appendChild(wrapper);
     }
+  }
+
+  // Smoothly scrolls the path so the currently-selected node is centered in view
+  function scrollToSelectedNode(smooth) {
+    let target = levelGridContainer.querySelector(`.path-node-wrapper[data-level-idx="${selectedLevelIdx}"]`);
+    if (!target) return;
+    let targetTop = parseFloat(target.style.top) || 0;
+    let destination = Math.max(0, targetTop - levelPathScroll.clientHeight / 2 + 40);
+    levelPathScroll.scrollTo({ top: destination, behavior: smooth ? "smooth" : "auto" });
   }
 
   function updateModalPlayBtnText() {
@@ -926,7 +1150,17 @@
     levelSelectScreen.classList.remove("hidden-screen");
     hudLayer.style.display = "none";
     gameInstruction.style.display = "none";
+
+    // Land the player on their current level in the winding path
+    requestAnimationFrame(() => scrollToSelectedNode(false));
   }
+
+  let pathResizeTimer = null;
+  window.addEventListener("resize", () => {
+    if (appState !== "LEVEL_SELECT") return;
+    clearTimeout(pathResizeTimer);
+    pathResizeTimer = setTimeout(() => renderLevelGrid(), 120);
+  });
 
   function openHomeScreen() {
     appState = "HOME";
@@ -1066,6 +1300,7 @@
 
     spawnParticles(player.x, player.y, "#ffffff", 8);
     playHookSound();
+    haptic(8);
   }
 
   function detachHook() {
@@ -1119,12 +1354,13 @@
     if (e.code === "Space") handleInputUp();
   });
 
-  mainPlayBtn.onclick = () => startLevel(maxUnlockedLevel);
-  mainLevelsBtn.onclick = () => openLevelSelectScreen();
-  modalCloseBtn.onclick = () => openHomeScreen();
-  modalPlayBtn.onclick = () => startLevel(selectedLevelIdx);
-  hudRestartBtn.onclick = () => startLevel(currentLevelIdx);
-  hudMenuBtn.onclick = () => openLevelSelectScreen();
+  mainPlayBtn.onclick = () => { haptic(20); startLevel(maxUnlockedLevel); };
+  mainLevelsBtn.onclick = () => { haptic(15); openLevelSelectScreen(); };
+  modalCloseBtn.onclick = () => { haptic(10); openHomeScreen(); };
+  modalPlayBtn.onclick = () => { haptic(20); startLevel(selectedLevelIdx); };
+  hudRestartBtn.onclick = () => { haptic(15); startLevel(currentLevelIdx); };
+  hudMenuBtn.onclick = () => { haptic(15); openLevelSelectScreen(); };
+  scrollFabBtn.onclick = () => { haptic(12); scrollToSelectedNode(true); };
 
   let lastTime = performance.now();
   let accumTime = 0;
@@ -1198,6 +1434,7 @@
       ) {
         spawnParticles(player.x, player.y, "#ff4444", 25);
         playFailSound();
+        haptic([15, 40, 15]);
         appState = "DEAD";
         setTimeout(() => {
           if (appState === "DEAD") startLevel(currentLevelIdx);
@@ -1208,6 +1445,7 @@
 
     if (player.y > H + 120) {
       playFailSound();
+      haptic([15, 40, 15]);
       appState = "DEAD";
       setTimeout(() => {
         if (appState === "DEAD") startLevel(currentLevelIdx);
@@ -1218,6 +1456,7 @@
       appState = "WIN";
       spawnParticles(finishX, H * 0.4, "#ffffff", 50);
       playWinSound();
+      haptic([10, 30, 10, 30, 20]);
 
       if (currentLevelIdx >= maxUnlockedLevel) {
         maxUnlockedLevel = Math.min(49, currentLevelIdx + 1);
