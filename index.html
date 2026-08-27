@@ -1294,7 +1294,8 @@
     for (const h of hooks) {
       let dx = h.x - player.x; let dy = h.y - player.y;
       let dist = Math.hypot(dx, dy);
-      if (dx > -50 && dist < 480 && dist < minDistance) {
+      // Allow hooks ahead OR directly above/slightly behind (-120px to +550px)
+      if (dx > -120 && dist < 550 && dist < minDistance) {
         minDistance = dist; best = h;
       }
     }
@@ -1305,7 +1306,6 @@
     if (detachCooldown > 0) return;
     let target = findClosestAheadHook();
     if (!target) return;
-    if (target === lastAttachedHook && (player.x - target.x) < 30) return;
 
     let dx = player.x - target.x; let dy = player.y - target.y;
     let rope = Math.hypot(dx, dy); let angle = Math.atan2(dx, dy);
@@ -1326,7 +1326,8 @@
     player.vx = r * Math.cos(a) * av * 1.08;
     player.vy = -r * Math.sin(a) * av * 1.08;
 
-    player.attached = false; player.anchor = null; detachCooldown = 0.12;
+    player.attached = false; player.anchor = null; 
+    detachCooldown = 0.15; // Set brief cooldown so release feels responsive while allowing re-hooking below
     airRotations = 0;
   }
 
