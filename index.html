@@ -751,7 +751,6 @@
 (function() {
   "use strict";
 
-  // Audio Context Synthesizer
   let audioCtx = null;
   function getAudioContext() {
     if (!audioCtx) {
@@ -832,8 +831,7 @@
   let DPR = Math.min(window.devicePixelRatio || 1, 2);
   let W = 0, H = 0;
 
-  // Game Modes & Persistence
-  let gameMode = "LEVELS"; // "LEVELS", "ENDLESS", "TIME_ATTACK"
+  let gameMode = "LEVELS";
   let currentLevelIdx = 0;
   let selectedLevelIdx = 0;
   let activeWorldTab = 0;
@@ -843,7 +841,6 @@
   let difficulty = localStorage.getItem('sh_difficulty') || 'HARD';
   let endlessHighScore = parseInt(localStorage.getItem('sh_endless_hs') || '0', 10);
 
-  // Shop Data
   let unlockedSkins = JSON.parse(localStorage.getItem('sh_unlocked_skins') || '["classic"]');
   let equippedSkin = localStorage.getItem('sh_equipped_skin') || 'classic';
   let unlockedTrails = JSON.parse(localStorage.getItem('sh_unlocked_trails') || '["default"]');
@@ -866,12 +863,11 @@
   ];
 
   let activeShopTab = 'skins';
-  let appState = "HOME"; // "HOME", "LEVEL_SELECT", "PLAYING", "WIN", "DEAD"
+  let appState = "HOME";
   let isPointerDown = false;
   let animTime = 0;
   let ringRotation = 0;
 
-  // Level & Physics Entities
   let levelLength = 2400;
   let startPos = { x: 120, y: 300 };
   let finishX = 2200;
@@ -886,7 +882,6 @@
   let particles = [];
   let floatingTexts = [];
 
-  // Dynamic Camera & Juices
   let cameraX = 0;
   let cameraZoom = 1.0;
   let targetCameraZoom = 1.0;
@@ -899,8 +894,6 @@
   let airRotations = 0;
   let totalFlipsInLevel = 0;
   let levelCoinsEarned = 0;
-
-  // Time Attack Tracker
   let timeAttackTimer = 0;
   const TIME_ATTACK_TARGET_TIME = 15.0;
 
@@ -919,7 +912,6 @@
     trail: []
   };
 
-  // UI Element References
   const mainMenuScreen = document.getElementById("main-menu-screen");
   const levelSelectScreen = document.getElementById("level-select-screen");
   const settingsModalOverlay = document.getElementById("settings-modal-overlay");
@@ -1273,7 +1265,6 @@
 
     trampolines.unshift({ x: startPos.x - 40, y: startPos.y + 110, w: 120, h: 18, squish: 0 });
 
-    // HUD Setup
     if (mode === "LEVELS") {
       hudProgressContainer.style.display = "flex";
       hudModeCounter.classList.add("hidden");
@@ -1456,7 +1447,7 @@
   window.addEventListener("keyup", (e) => { if (e.code === "Space") handleInputUp(); });
 
   const FIXED_DT = 1 / 120;
-  let accumTime = 0; let lastTime = performance.now();
+  let accumTime = 0;
 
   function stepPhysics(dt) {
     if (appState !== "PLAYING") return;
@@ -1513,11 +1504,9 @@
       if (isPointerDown) attachHook();
     }
 
-    // Dynamic Trail
     player.trail.push({ x: player.x, y: player.y });
     if (player.trail.length > 12) player.trail.shift();
 
-    // Dash Rings Collision
     for (let ring of dashRings) {
       if (!ring.triggered && Math.hypot(player.x - ring.x, player.y - ring.y) < ring.radius + player.radius) {
         ring.triggered = true;
@@ -1529,7 +1518,6 @@
       }
     }
 
-    // Golden Coins Collection
     for (let coin of coins) {
       if (!coin.collected && Math.hypot(player.x - coin.x, player.y - coin.y) < player.radius + 12) {
         coin.collected = true;
@@ -1541,7 +1529,6 @@
       }
     }
 
-    // Glass Shatter Mechanics with Sharp Shard Dynamics
     for (let glass of glassBarriers) {
       if (!glass.hit && player.x + player.radius > glass.x && player.x - player.radius < glass.x + glass.w &&
           player.y + player.radius > glass.y && player.y - player.radius < glass.y + glass.h) {
@@ -1552,7 +1539,6 @@
           playSound('shatter');
           player.vx *= 0.92;
 
-          // Spawn glass shard particles
           for (let i = 0; i < 24; i++) {
             let shardX = glass.x + Math.random() * glass.w;
             let shardY = glass.y + Math.random() * glass.h;
@@ -1579,7 +1565,6 @@
       }
     }
 
-    // Trampolines Bounce
     for (let t of trampolines) {
       if (t.squish > 0) t.squish = Math.max(0, t.squish - dt * 4.5);
       if (player.vy > 0 && player.x >= t.x - 12 && player.x <= t.x + t.w + 12 &&
@@ -1595,7 +1580,6 @@
       }
     }
 
-    // Hazards (Red saws)
     for (let hz of hazards) {
       if (player.x + player.radius > hz.x && player.x - player.radius < hz.x + hz.w &&
           player.y + player.radius > hz.y && player.y - player.radius < hz.y + hz.h) {
@@ -1604,12 +1588,10 @@
       }
     }
 
-    // Off-screen Fall
     if (player.y > H + 120) {
       triggerPlayerDeath();
     }
 
-    // Endless Mode Procedural Generation
     if (gameMode === "ENDLESS") {
       let currentDistance = Math.floor((player.x - startPos.x) / 10);
       hudModeVal.textContent = `${currentDistance}m`;
@@ -1626,7 +1608,6 @@
       }
     }
 
-    // Finish Line Reached
     if (gameMode !== "ENDLESS" && player.x >= finishX) {
       let earnedStars = 3;
       if (gameMode === "TIME_ATTACK" && timeAttackTimer > TIME_ATTACK_TARGET_TIME) earnedStars = 2;
@@ -1666,7 +1647,6 @@
       }
       if (steps >= 4) accumTime = 0;
 
-      // Dynamic Camera
       let speed = Math.hypot(player.vx, player.vy);
       targetCameraZoom = 1.0 - Math.min(0.25, Math.max(0, (speed - 400) / 1800));
       cameraZoom += (targetCameraZoom - cameraZoom) * (1 - Math.exp(-8 * dt));
@@ -1684,7 +1664,6 @@
       cameraX += 60 * dt;
     }
 
-    // Particle Updates
     for (let p of particles) {
       p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
     }
@@ -1748,7 +1727,6 @@
     drawHazards();
     drawHooks();
 
-    // Swing Rope
     if (player.attached && player.anchor) {
       ctx.save();
       ctx.beginPath();
@@ -1766,7 +1744,6 @@
       drawCustomCharacter();
     }
 
-    // Floating Texts
     for (let ft of floatingTexts) {
       ctx.save();
       ctx.font = "800 16px 'Fredoka', sans-serif";
@@ -1776,7 +1753,6 @@
       ctx.restore();
     }
 
-    // Particles & Shards
     for (let p of particles) {
       ctx.save();
       ctx.fillStyle = p.color;
@@ -1875,7 +1851,6 @@
       if (glass.hit) continue;
       ctx.save();
 
-      // Multi-stop linear gradient for translucent glass body
       let gGrad = ctx.createLinearGradient(glass.x, glass.y, glass.x + glass.w, glass.y + glass.h);
       gGrad.addColorStop(0, "rgba(215, 248, 255, 0.6)");
       gGrad.addColorStop(0.35, "rgba(130, 215, 248, 0.4)");
@@ -1884,23 +1859,19 @@
       ctx.fillStyle = gGrad;
       ctx.fillRect(glass.x, glass.y, glass.w, glass.h);
 
-      // Inner glass frame highlight line
       ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
       ctx.lineWidth = 2;
       ctx.strokeRect(glass.x + 1, glass.y + 1, glass.w - 2, glass.h - 2);
 
-      // Outer soft glass edge border
       ctx.strokeStyle = "rgba(81, 226, 245, 0.6)";
       ctx.lineWidth = 1;
       ctx.strokeRect(glass.x, glass.y, glass.w, glass.h);
 
-      // Clip bounds for interior glare and cracks
       ctx.save();
       ctx.beginPath();
       ctx.rect(glass.x, glass.y, glass.w, glass.h);
       ctx.clip();
 
-      // Top diagonal glare line
       ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
       ctx.beginPath();
       ctx.moveTo(glass.x - 10, glass.y + glass.h * 0.28);
@@ -1909,7 +1880,6 @@
       ctx.lineTo(glass.x - 10, glass.y + glass.h * 0.28 + 10);
       ctx.fill();
 
-      // Secondary lower glare line
       ctx.fillStyle = "rgba(255, 255, 255, 0.28)";
       ctx.beginPath();
       ctx.moveTo(glass.x - 10, glass.y + glass.h * 0.72);
@@ -1918,7 +1888,6 @@
       ctx.lineTo(glass.x - 10, glass.y + glass.h * 0.72 + 6);
       ctx.fill();
 
-      // Subtle crystalline internal fracture lines
       ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -2036,15 +2005,12 @@
     let cols = 2;
 
     ctx.save();
-
-    // 1. Support Pillars & Border Frame
     ctx.fillStyle = "#1e2436";
     ctx.fillRect(fx - (cols * squareSize) / 2 - 5, topY - 10, (cols * squareSize) + 10, botY - topY + 20);
     ctx.strokeStyle = "#51e2f5";
     ctx.lineWidth = 2;
     ctx.strokeRect(fx - (cols * squareSize) / 2 - 5, topY - 10, (cols * squareSize) + 10, botY - topY + 20);
 
-    // 2. F1 Dual-Column Checkered Tile Banner
     let startX = fx - (cols * squareSize) / 2;
     let rowCount = Math.floor((botY - topY) / squareSize);
 
@@ -2056,7 +2022,6 @@
       }
     }
 
-    // 3. F1 Finish Arch Banner Header
     ctx.fillStyle = "#ff4757";
     ctx.fillRect(fx - 60, topY - 45, 120, 32);
     ctx.strokeStyle = "#ffffff";
@@ -2071,7 +2036,6 @@
     ctx.shadowBlur = 4;
     ctx.fillText("FINISH", fx, topY - 29);
 
-    // 4. Pulsing Racing Signal Beacons on Arch sides
     let beaconColor = Math.sin(animTime * 10) > 0 ? "#2ed573" : "#ff4757";
     ctx.fillStyle = beaconColor;
     ctx.shadowColor = beaconColor;
@@ -2118,44 +2082,40 @@
     ctx.lineWidth = 3.5;
     ctx.lineCap = "round";
 
-    // Draw Head
     ctx.beginPath();
     ctx.arc(0, -14, 7, 0, Math.PI * 2);
     ctx.fill();
 
-    // Body
     ctx.beginPath();
     ctx.moveTo(0, -7); ctx.lineTo(0, 8);
     ctx.stroke();
 
-    // Limbs
     ctx.beginPath();
-    if (player.attached) {
-      ctx.moveTo(0, -4); ctx.lineTo(-6, -16);
-      ctx.moveTo(0, -4); ctx.lineTo(6, -16);
-    } else {
-      ctx.moveTo(0, -4); ctx.lineTo(-10, 4);
-      ctx.moveTo(0, -4); ctx.lineTo(10, 4);
-    }
-    ctx.moveTo(0, 8); ctx.lineTo(-8, 20);
-    ctx.moveTo(0, 8); ctx.lineTo(8, 20);
+    ctx.moveTo(0, -3); ctx.lineTo(-11, 2);
+    ctx.moveTo(0, -3); ctx.lineTo(11, 2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, 8); ctx.lineTo(-8, 22);
+    ctx.moveTo(0, 8); ctx.lineTo(8, 22);
     ctx.stroke();
 
     ctx.restore();
   }
 
+  let lastFrameTime = performance.now();
   function gameLoop(now) {
-    let dt = (now - lastTime) / 1000;
-    lastTime = now;
-    dt = Math.min(dt, 0.033);
+    let dt = (now - lastFrameTime) / 1000;
+    if (dt > 0.1) dt = 0.1;
+    lastFrameTime = now;
 
     update(dt);
     draw();
+
     requestAnimationFrame(gameLoop);
   }
 
-  updateGlobalStatsUI();
-  updateDifficultyUI();
+  openHomeScreen();
   requestAnimationFrame(gameLoop);
 
 })();
