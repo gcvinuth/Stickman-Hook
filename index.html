@@ -127,7 +127,13 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     }
 
-    #level-modal-container {
+    .btn-purple {
+      background: linear-gradient(180deg, #8e2de2 0%, #4a00e0 100%);
+      border: 3px solid #c471ed;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    #level-modal-container, .settings-card {
       width: 92%;
       max-width: 860px;
       background: #141824;
@@ -138,6 +144,11 @@
       display: flex;
       flex-direction: column;
       position: relative;
+    }
+
+    .settings-card {
+      max-width: 500px;
+      padding: 28px;
     }
 
     .modal-header {
@@ -405,6 +416,12 @@
       z-index: 20;
     }
 
+    .hud-controls-group {
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
     .hud-btn {
       width: 46px;
       height: 46px;
@@ -496,7 +513,7 @@
     }
 
     /* Victory Level Complete Modal */
-    #victory-modal-overlay {
+    #victory-modal-overlay, #settings-modal-overlay {
       position: absolute;
       inset: 0;
       display: flex;
@@ -510,7 +527,7 @@
       transition: opacity 0.3s ease;
     }
 
-    #victory-modal-overlay.active {
+    #victory-modal-overlay.active, #settings-modal-overlay.active {
       opacity: 1;
       pointer-events: auto;
     }
@@ -528,7 +545,7 @@
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    #victory-modal-overlay.active .victory-card {
+    #victory-modal-overlay.active .victory-card, #settings-modal-overlay.active .settings-card {
       transform: scale(1);
     }
 
@@ -550,6 +567,55 @@
       text-shadow: 0 0 20px rgba(255, 202, 40, 0.8);
       transform: scale(1.15);
     }
+
+    .difficulty-card-option {
+      flex: 1;
+      background: #1d2334;
+      border: 2px solid #2d364f;
+      border-radius: 16px;
+      padding: 16px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .difficulty-card-option:hover {
+      border-color: #51e2f5;
+    }
+
+    .difficulty-card-option.selected-easy {
+      background: rgba(40, 239, 125, 0.12);
+      border-color: #38ef7d;
+      box-shadow: 0 0 20px rgba(56, 239, 125, 0.3);
+    }
+
+    .difficulty-card-option.selected-hard {
+      background: rgba(255, 71, 87, 0.12);
+      border-color: #ff4757;
+      box-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
+    }
+
+    .diff-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .diff-badge-easy {
+      background: #15aa65;
+      color: #ffffff;
+    }
+
+    .diff-badge-hard {
+      background: #e84118;
+      color: #ffffff;
+    }
   </style>
 </head>
 <body>
@@ -565,8 +631,8 @@
         <p class="text-white/80 text-lg font-semibold drop-shadow">Swing, bounce, and flip to the finish line!</p>
         
         <!-- Stickman Preview Graphic -->
-        <div class="my-4 relative w-32 h-32 flex items-center justify-center">
-          <svg class="w-28 h-28 drop-shadow-lg" viewBox="0 0 100 100">
+        <div class="my-2 relative w-28 h-28 flex items-center justify-center">
+          <svg class="w-24 h-24 drop-shadow-lg" viewBox="0 0 100 100">
             <circle cx="50" cy="22" r="10" fill="#ffffff" />
             <path d="M50 32 L50 60 M50 40 L25 25 M50 40 L75 25 M50 60 L30 88 M50 60 L70 88" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
             <!-- Swinging Rope -->
@@ -574,32 +640,31 @@
           </svg>
         </div>
 
-        <div class="flex flex-col gap-4 w-full px-6">
+        <div class="flex flex-col gap-3.5 w-full px-6">
           <button id="main-play-btn" class="btn-3d btn-green text-xl py-4">
             PLAY GAME
           </button>
           <button id="main-levels-btn" class="btn-3d btn-blue text-lg py-3.5">
             SELECT LEVEL
           </button>
+          <button id="main-settings-btn" class="btn-3d btn-purple text-lg py-3">
+            SETTINGS ⚙️
+          </button>
         </div>
 
-        <div class="mt-4 flex gap-6 text-white/70 font-bold text-sm bg-black/30 px-6 py-2.5 rounded-full border border-white/10">
+        <div class="mt-2 flex gap-6 text-white/70 font-bold text-sm bg-black/30 px-6 py-2 rounded-full border border-white/10">
           <div>TOTAL STARS: <span id="main-stars-count" class="text-yellow-400">0</span></div>
           <div>UNLOCKED: <span id="main-unlocked-count" class="text-emerald-400">1/50</span></div>
         </div>
       </div>
     </div>
 
+    <!-- Level Select Modal Screen -->
     <div id="level-select-screen" class="screen-overlay hidden-screen">
       <div id="level-modal-container">
         
         <!-- Header Section -->
         <div class="modal-header">
-          <button class="close-btn" id="modal-home-btn" title="Home Menu" style="left: 0; right: auto;">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-            </svg>
-          </button>
           <div class="title">STICKMAN HOOK</div>
           <div class="stats-line" id="modal-stats-text">Unlocked: Level 1 / 50 • Total Stars: ⭐0</div>
           <button class="close-btn" id="modal-close-btn" title="Close Menu">
@@ -628,6 +693,51 @@
       </div>
     </div>
 
+    <div id="settings-modal-overlay">
+      <div class="settings-card">
+        <div class="modal-header">
+          <div class="title" style="background: linear-gradient(180deg, #c471ed 0%, #8e2de2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">SETTINGS</div>
+          <div class="stats-line">Customize Game Experience</div>
+          <button class="close-btn" id="settings-close-btn" title="Close Settings">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="my-4">
+          <h3 class="text-white font-extrabold text-center text-lg mb-3 tracking-wide">DIFFICULTY LEVEL</h3>
+          <div class="flex gap-4">
+            
+            <!-- Easy Option -->
+            <div id="opt-easy" class="difficulty-card-option">
+              <span class="diff-badge diff-badge-easy">Easy</span>
+              <span class="text-white font-bold text-base mt-1">NO OBSTACLES</span>
+              <p class="text-xs text-gray-400 text-center leading-relaxed mt-1">
+                No red hazard bars in courses. Relaxed & fun swinging!
+              </p>
+            </div>
+
+            <!-- Hard Option -->
+            <div id="opt-hard" class="difficulty-card-option">
+              <span class="diff-badge diff-badge-hard">Hard</span>
+              <span class="text-white font-bold text-base mt-1">RED OBSTACLES</span>
+              <p class="text-xs text-gray-400 text-center leading-relaxed mt-1">
+                Includes red hazard bars in courses. Requires precision!
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-center">
+          <button id="settings-save-btn" class="btn-3d btn-green text-base py-3 px-8">
+            CONFIRM & CLOSE
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Victory Overlay Screen -->
     <div id="victory-modal-overlay">
       <div class="victory-card">
@@ -647,7 +757,6 @@
       </div>
     </div>
 
-    <!-- HUD Overlay -->
     <div id="hud-layer" style="display: none;">
       <button class="hud-btn" id="hud-restart-btn" title="Restart Level">
         <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
@@ -664,15 +773,15 @@
         <span class="hud-lvl-num" id="hud-next-lvl">2</span>
       </div>
 
-      <div class="flex gap-2.5 pointer-events-auto">
+      <div class="hud-controls-group">
+        <button class="hud-btn" id="hud-settings-btn" title="Settings">
+          <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+          </svg>
+        </button>
         <button class="hud-btn" id="hud-menu-btn" title="Level Select">
           <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
             <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-          </svg>
-        </button>
-        <button class="hud-btn" id="hud-home-btn" title="Main Menu">
-          <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
           </svg>
         </button>
       </div>
@@ -778,14 +887,17 @@
   let DPR = Math.min(window.devicePixelRatio || 1, 2);
   let W = 0, H = 0;
 
-  // Level & Progress Persistence
+  // Level, Settings & Progress Persistence
   let currentLevelIdx = 0;
   let selectedLevelIdx = 0;
   let activeWorldTab = 0;
   let maxUnlockedLevel = parseInt(localStorage.getItem('sh_unlocked_lvl') || '0', 10);
   let levelStarsMap = JSON.parse(localStorage.getItem('sh_stars_map') || '{"0": 3}');
+  
+  // Difficulty Level: "EASY" (No red bars) or "HARD" (Has red bars)
+  let difficulty = localStorage.getItem('sh_difficulty') || 'HARD';
 
-  let appState = "HOME"; // "HOME", "LEVEL_SELECT", "PLAYING", "WIN"
+  let appState = "HOME"; // "HOME", "LEVEL_SELECT", "PLAYING", "WIN", "SETTINGS"
   let isPointerDown = false;
   let animTime = 0;
   let ringRotation = 0;
@@ -845,12 +957,14 @@
   // UI Element References
   const mainMenuScreen = document.getElementById("main-menu-screen");
   const levelSelectScreen = document.getElementById("level-select-screen");
+  const settingsModalOverlay = document.getElementById("settings-modal-overlay");
   const hudLayer = document.getElementById("hud-layer");
   const gameInstruction = document.getElementById("game-instruction");
   const victoryOverlay = document.getElementById("victory-modal-overlay");
 
   const mainPlayBtn = document.getElementById("main-play-btn");
   const mainLevelsBtn = document.getElementById("main-levels-btn");
+  const mainSettingsBtn = document.getElementById("main-settings-btn");
   const mainStarsCount = document.getElementById("main-stars-count");
   const mainUnlockedCount = document.getElementById("main-unlocked-count");
 
@@ -858,8 +972,12 @@
   const levelGridContainer = document.getElementById("level-grid-container");
   const modalStatsText = document.getElementById("modal-stats-text");
   const modalCloseBtn = document.getElementById("modal-close-btn");
-  const modalHomeBtn = document.getElementById("modal-home-btn");
   const modalPlayBtn = document.getElementById("modal-play-btn");
+
+  const optEasy = document.getElementById("opt-easy");
+  const optHard = document.getElementById("opt-hard");
+  const settingsCloseBtn = document.getElementById("settings-close-btn");
+  const settingsSaveBtn = document.getElementById("settings-save-btn");
 
   const victoryReplayBtn = document.getElementById("victory-replay-btn");
   const victoryNextBtn = document.getElementById("victory-next-btn");
@@ -870,7 +988,7 @@
   const hudBarDot = document.getElementById("hud-bar-dot");
   const hudRestartBtn = document.getElementById("hud-restart-btn");
   const hudMenuBtn = document.getElementById("hud-menu-btn");
-  const hudHomeBtn = document.getElementById("hud-home-btn");
+  const hudSettingsBtn = document.getElementById("hud-settings-btn");
 
   function resizeCanvas() {
     W = window.innerWidth;
@@ -887,6 +1005,7 @@
   function saveProgress() {
     localStorage.setItem('sh_unlocked_lvl', maxUnlockedLevel.toString());
     localStorage.setItem('sh_stars_map', JSON.stringify(levelStarsMap));
+    localStorage.setItem('sh_difficulty', difficulty);
   }
 
   function updateGlobalStatsUI() {
@@ -897,6 +1016,42 @@
     mainUnlockedCount.textContent = `${maxUnlockedLevel + 1}/50`;
     modalStatsText.textContent = `Unlocked: Level ${maxUnlockedLevel + 1} / 50 • Total Stars: ⭐${totalStars}`;
   }
+
+  function updateDifficultyUI() {
+    if (difficulty === "EASY") {
+      optEasy.classList.add("selected-easy");
+      optHard.classList.remove("selected-hard");
+    } else {
+      optEasy.classList.remove("selected-easy");
+      optHard.classList.add("selected-hard");
+    }
+  }
+
+  function openSettingsScreen() {
+    settingsModalOverlay.classList.add("active");
+    updateDifficultyUI();
+  }
+
+  function closeSettingsScreen() {
+    settingsModalOverlay.classList.remove("active");
+  }
+
+  optEasy.onclick = () => {
+    difficulty = "EASY";
+    saveProgress();
+    updateDifficultyUI();
+  };
+
+  optHard.onclick = () => {
+    difficulty = "HARD";
+    saveProgress();
+    updateDifficultyUI();
+  };
+
+  settingsCloseBtn.onclick = closeSettingsScreen;
+  settingsSaveBtn.onclick = closeSettingsScreen;
+  mainSettingsBtn.onclick = openSettingsScreen;
+  hudSettingsBtn.onclick = openSettingsScreen;
 
   function renderWorldTabs() {
     worldTabsList.innerHTML = "";
@@ -1027,6 +1182,7 @@
     mainMenuScreen.classList.add("hidden-screen");
     levelSelectScreen.classList.remove("hidden-screen");
     victoryOverlay.classList.remove("active");
+    settingsModalOverlay.classList.remove("active");
     hudLayer.style.display = "none";
     gameInstruction.style.display = "none";
   }
@@ -1037,6 +1193,7 @@
     mainMenuScreen.classList.remove("hidden-screen");
     levelSelectScreen.classList.add("hidden-screen");
     victoryOverlay.classList.remove("active");
+    settingsModalOverlay.classList.remove("active");
     hudLayer.style.display = "none";
     gameInstruction.style.display = "none";
   }
@@ -1077,7 +1234,11 @@
     let baseSpacing = 180 + Math.min(levelIdx * 8, 130);
     let movingHookChance = Math.min(levelIdx * 0.08, 0.6);
     let trampolineChance = Math.max(0.2, 0.75 - levelIdx * 0.02);
-    let hazardChance = levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.1, 0.38) : 0;
+    
+    // Check difficulty: If EASY, hazardChance is ALWAYS 0. If HARD, spawn obstacles.
+    let hazardChance = (difficulty === "EASY") 
+      ? 0 
+      : (levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.1, 0.38) : 0);
 
     let currX = 280;
 
@@ -1101,6 +1262,7 @@
         movePhase: Math.random() * Math.PI * 2
       });
 
+      // Spawn red hazards only if hazardChance > 0 (Hard difficulty)
       if (hazardChance > 0 && Math.random() < hazardChance && currX < finishX - 400) {
         let hazW = 55 + Math.random() * 45;
         let hazY = hookY + 180 + Math.random() * 40;
@@ -1132,6 +1294,7 @@
     mainMenuScreen.classList.add("hidden-screen");
     levelSelectScreen.classList.add("hidden-screen");
     victoryOverlay.classList.remove("active");
+    settingsModalOverlay.classList.remove("active");
     hudLayer.style.display = "flex";
     gameInstruction.style.display = "block";
     gameInstruction.style.opacity = "1";
@@ -1235,7 +1398,7 @@
 
   function handleInputDown(e) {
     if (appState !== "PLAYING" && appState !== "DEAD") return;
-    if (e && e.target && e.target.closest("#hud-layer, .screen-overlay, #victory-modal-overlay")) return;
+    if (e && e.target && e.target.closest("#hud-layer, .screen-overlay, #victory-modal-overlay, #settings-modal-overlay")) return;
 
     isPointerDown = true;
     gameInstruction.style.opacity = "0";
@@ -1272,11 +1435,9 @@
   mainPlayBtn.onclick = () => startLevel(maxUnlockedLevel);
   mainLevelsBtn.onclick = () => openLevelSelectScreen();
   modalCloseBtn.onclick = () => openHomeScreen();
-  if (modalHomeBtn) modalHomeBtn.onclick = () => openHomeScreen();
   modalPlayBtn.onclick = () => startLevel(selectedLevelIdx);
   hudRestartBtn.onclick = () => startLevel(currentLevelIdx);
   hudMenuBtn.onclick = () => openLevelSelectScreen();
-  if (hudHomeBtn) hudHomeBtn.onclick = () => openHomeScreen();
 
   victoryReplayBtn.onclick = () => startLevel(currentLevelIdx);
   victoryNextBtn.onclick = () => startLevel(selectedLevelIdx);
@@ -1386,7 +1547,7 @@
       }
     }
 
-    // Check Hazards
+    // Check Hazards (Only active when hazards exist in level)
     for (let hz of hazards) {
       if (
         player.x + player.radius > hz.x &&
@@ -1554,7 +1715,7 @@
     ctx.fill();
     ctx.restore();
 
-    // 3. Calmed & Subtle Animated Waves
+    // 3. Animated Wave Layers
     const WAVE_LAYERS = [
       {
         amplitude: 25,
@@ -1947,6 +2108,7 @@
 
   // Initial Boot
   updateGlobalStatsUI();
+  updateDifficultyUI();
   requestAnimationFrame(gameLoop);
 
 })();
