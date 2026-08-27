@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Stickman Hook</title>
+  <title>Stickman Hook - Gradient Waves Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Montserrat:wght@700;800;900&display=swap');
 
     :root {
-      --bg-sky-top: #208b98;
-      --bg-sky-bottom: #4eb5a7;
+      --bg-sky-top: #134e5e;
+      --bg-sky-bottom: #71b280;
       --modal-bg: #141824;
       --modal-card-bg: #1d2232;
       --accent-green: #25d366;
@@ -45,7 +45,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(180deg, var(--bg-sky-top) 0%, var(--bg-sky-bottom) 100%);
+      background: #0d111a;
     }
 
     canvas {
@@ -64,7 +64,7 @@
       justify-content: center;
       z-index: 40;
       transition: opacity 0.35s ease, transform 0.35s ease;
-      background: radial-gradient(circle at center, rgba(32, 139, 152, 0.4) 0%, rgba(13, 17, 26, 0.85) 100%);
+      background: radial-gradient(circle at center, rgba(19, 78, 94, 0.45) 0%, rgba(13, 17, 26, 0.88) 100%);
       backdrop-filter: blur(8px);
     }
 
@@ -74,18 +74,17 @@
       transform: scale(1.04);
     }
 
-    /* Animated Logo Header */
     .game-logo {
       font-family: 'Montserrat', sans-serif;
       font-weight: 900;
       font-size: 3.5rem;
       letter-spacing: 2px;
       text-transform: uppercase;
-      background: linear-gradient(180deg, #3ee4b7 0%, #208b98 50%, #15626c 100%);
+      background: linear-gradient(180deg, #51e2f5 0%, #9df9ef 40%, #edf7f6 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 6px 0px rgba(0, 0, 0, 0.35));
-      text-shadow: 0 0 20px rgba(62, 228, 183, 0.4);
+      filter: drop-shadow(0 6px 0px rgba(0, 0, 0, 0.4));
+      text-shadow: 0 0 25px rgba(81, 226, 245, 0.5);
       animation: floatLogo 3s ease-in-out infinite alternate;
     }
 
@@ -108,12 +107,12 @@
       color: #ffffff;
       cursor: pointer;
       transition: all 0.15s ease;
-      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3), 0 12px 20px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.35), 0 12px 20px rgba(0, 0, 0, 0.25);
     }
 
     .btn-3d:active {
       transform: translateY(6px);
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
     .btn-green {
@@ -131,31 +130,14 @@
     #level-modal-container {
       width: 92%;
       max-width: 860px;
-      height: 90vh;
-      height: 90dvh;
-      max-height: 900px;
       background: #141824;
       border: 3px solid #232a3d;
       border-radius: 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(32, 139, 152, 0.25);
-      padding: 18px 18px 14px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(81, 226, 245, 0.2);
+      padding: 20px;
       display: flex;
       flex-direction: column;
       position: relative;
-      overflow: hidden;
-    }
-
-    @media (max-width: 640px) {
-      #level-modal-container {
-        width: 100%;
-        height: 100vh;
-        height: 100dvh;
-        max-height: none;
-        max-width: none;
-        border-radius: 0;
-        border-width: 0;
-        padding: max(12px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
-      }
     }
 
     .modal-header {
@@ -163,17 +145,7 @@
       flex-direction: column;
       align-items: center;
       position: relative;
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-
-    .modal-header .crumb {
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 2px;
-      color: #7effb5;
-      text-transform: uppercase;
-      margin-bottom: 2px;
+      margin-bottom: 14px;
     }
 
     .modal-header .title {
@@ -186,10 +158,6 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       filter: drop-shadow(0 3px 0 rgba(0,0,0,0.4));
-    }
-
-    @media (max-width: 640px) {
-      .modal-header .title { font-size: 1.5rem; }
     }
 
     .modal-header .stats-line {
@@ -226,10 +194,9 @@
       display: flex;
       gap: 10px;
       overflow-x: auto;
-      padding: 4px 2px 10px;
-      margin-bottom: 8px;
+      padding-bottom: 8px;
+      margin-bottom: 18px;
       scrollbar-width: none;
-      flex-shrink: 0;
     }
 
     .world-tabs-container::-webkit-scrollbar {
@@ -237,289 +204,160 @@
     }
 
     .world-tab-btn {
-      flex-shrink: 0;
-      width: 74px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 2px 0 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .world-tab-btn .tab-icon-box {
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
-      background: linear-gradient(180deg, #232a3d 0%, #1a2032 100%);
-      border: 2px solid #2d364f;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.7rem;
-      box-shadow: 0 4px 0 rgba(0,0,0,0.35), 0 6px 12px rgba(0,0,0,0.25);
-      transition: all 0.18s ease;
-      position: relative;
-    }
-
-    @media (max-width: 640px) {
-      .world-tab-btn { width: 62px; }
-      .world-tab-btn .tab-icon-box { width: 48px; height: 48px; font-size: 1.4rem; border-radius: 14px; }
-    }
-
-    .world-tab-btn:active .tab-icon-box {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    .world-tab-btn .tab-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #8ea1c8;
-      white-space: nowrap;
-      position: relative;
-    }
-
-    .world-tab-btn.active-tab .tab-icon-box {
-      background: linear-gradient(180deg, #eef0ff 0%, #d9deff 100%);
-      border-color: #a78bfa;
-      box-shadow: 0 4px 0 #6d28d9, 0 8px 16px rgba(124, 58, 237, 0.35);
-    }
-
-    .world-tab-btn.active-tab:active .tab-icon-box {
-      box-shadow: 0 1px 0 #6d28d9, 0 2px 8px rgba(124, 58, 237, 0.3);
-    }
-
-    .world-tab-btn.active-tab .tab-label {
-      color: #ffffff;
-    }
-
-    .world-tab-btn.active-tab .tab-label::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: -6px;
-      transform: translateX(-50%);
-      width: 22px;
-      height: 3px;
-      border-radius: 2px;
-      background: #7c3aed;
-    }
-
-    /* ===== Winding Level Path ===== */
-    .level-path-scroll {
-      position: relative;
       flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      border-radius: 16px;
-      background: radial-gradient(ellipse at 50% 0%, rgba(124, 58, 237, 0.08) 0%, transparent 60%), #0f1220;
-      border: 2px solid #1c2233;
-    }
-
-    .level-path-scroll::-webkit-scrollbar { width: 6px; }
-    .level-path-scroll::-webkit-scrollbar-thumb { background: #2d364f; border-radius: 4px; }
-
-    .path-line-svg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .level-path-container {
-      position: relative;
-      width: 100%;
-    }
-
-    .path-node-wrapper {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transform: translate(-50%, 0);
+      min-width: 140px;
+      padding: 10px 14px;
+      background: #1d2334;
+      border: 2px solid #2d364f;
+      border-radius: 20px;
+      color: #8ea1c8;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
       cursor: pointer;
-      touch-action: manipulation;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
 
-    .path-node-wrapper.locked-node { cursor: default; }
+    .world-tab-btn.active-tab {
+      background: #142a30;
+      border-color: #38ef7d;
+      color: #38ef7d;
+      box-shadow: 0 0 15px rgba(56, 239, 125, 0.25);
+    }
 
-    .path-node {
-      width: 82px;
-      height: 82px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
     }
 
     @media (max-width: 640px) {
-      .path-node { width: 64px; height: 64px; }
+      .level-grid {
+        gap: 10px;
+      }
+      .modal-header .title {
+        font-size: 1.6rem;
+      }
     }
 
-    .node-face {
-      width: 100%;
-      height: 100%;
-      border-radius: 24px;
-      transform: rotate(45deg);
+    .level-node-wrapper {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
-      border: 3px solid rgba(255,255,255,0.18);
+      cursor: pointer;
     }
 
-    .path-node-wrapper:active .node-face {
-      transform: rotate(45deg) translateY(7px);
-    }
-
-    .node-inner {
-      transform: rotate(-45deg);
+    .level-circle {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* Cleared node: purple 3D tile with check */
-    .path-node-wrapper.cleared-node .node-face {
-      background: linear-gradient(145deg, #a78bfa 0%, #7c3aed 100%);
-      box-shadow: 0 8px 0 #4c1d95, 0 12px 20px rgba(76, 29, 149, 0.4);
-    }
-    .path-node-wrapper.cleared-node:active .node-face {
-      box-shadow: 0 1px 0 #4c1d95, 0 3px 8px rgba(76, 29, 149, 0.3);
-    }
-    .path-node-wrapper.cleared-node .check-icn {
-      width: 32px; height: 32px; fill: #ffffff;
+    @media (max-width: 640px) {
+      .level-circle {
+        width: 60px;
+        height: 60px;
+      }
     }
 
-    /* Current node: blue 3D tile, pulsing */
-    .path-node-wrapper.current-node .node-face {
+    .level-circle.current-node {
       background: linear-gradient(145deg, #3a97ff 0%, #0056cf 100%);
-      border-color: #ffffff;
-      box-shadow: 0 8px 0 #003f99, 0 0 22px rgba(58, 151, 255, 0.85), 0 12px 20px rgba(0,0,0,0.3);
-      animation: pulseGlowDiamond 1.6s infinite alternate;
+      border: 4px solid #ffffff;
+      box-shadow: 0 0 25px rgba(58, 151, 255, 0.95), 0 0 10px rgba(255, 255, 255, 0.8);
+      animation: pulseGlow 2s infinite alternate;
     }
-    .path-node-wrapper.current-node:active .node-face {
-      box-shadow: 0 1px 0 #003f99, 0 0 18px rgba(58, 151, 255, 0.7);
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 18px rgba(58, 151, 255, 0.7); }
+      100% { box-shadow: 0 0 30px rgba(58, 151, 255, 1), 0 0 12px rgba(255, 255, 255, 0.9); }
     }
-    @keyframes pulseGlowDiamond {
-      0% { box-shadow: 0 8px 0 #003f99, 0 0 16px rgba(58,151,255,0.6), 0 12px 20px rgba(0,0,0,0.3); }
-      100% { box-shadow: 0 8px 0 #003f99, 0 0 30px rgba(58,151,255,1), 0 0 14px rgba(255,255,255,0.6); }
+
+    .level-circle.unlocked-node {
+      background: linear-gradient(145deg, #2b334a 0%, #1e2436 100%);
+      border: 3px solid #3e4c6e;
     }
-    .path-node-wrapper.current-node .level-num-text {
-      color: #ffffff;
+
+    .level-circle.locked-node {
+      background: linear-gradient(145deg, #d8dce8 0%, #b8becf 100%);
+      border: 3px solid #eef2fd;
+      opacity: 0.95;
+    }
+
+    .level-circle .level-num-text {
       font-family: 'Montserrat', sans-serif;
       font-weight: 900;
-      font-size: 1.6rem;
-    }
-
-    /* Locked node: flat grey tile with lock */
-    .path-node-wrapper.locked-node .node-face {
-      background: linear-gradient(145deg, #2b334a 0%, #1e2436 100%);
-      border-color: #3e4c6e;
-      box-shadow: 0 6px 0 #10141f, 0 8px 14px rgba(0,0,0,0.3);
-    }
-    .path-node-wrapper.locked-node .lock-icn {
-      width: 26px; height: 26px; fill: #5b6685;
+      font-size: 2rem;
+      line-height: 1;
     }
 
     @media (max-width: 640px) {
-      .path-node-wrapper.current-node .level-num-text { font-size: 1.25rem; }
-      .path-node-wrapper.cleared-node .check-icn { width: 24px; height: 24px; }
-      .path-node-wrapper.locked-node .lock-icn { width: 20px; height: 20px; }
+      .level-circle .level-num-text {
+        font-size: 1.4rem;
+      }
     }
 
-    .path-node-wrapper .stars-row {
+    .level-circle.current-node .level-num-text {
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .level-circle.locked-node .level-num-text {
+      color: #4e5872;
+    }
+
+    .level-circle .stars-row {
       display: flex;
       gap: 2px;
       margin-top: 2px;
-      transform: none;
     }
 
-    .path-node-wrapper .star-icon {
-      font-size: 10px;
-      color: #574a86;
+    .level-circle .star-icon {
+      font-size: 11px;
+      color: #9ba6be;
     }
 
-    .path-node-wrapper.cleared-node .star-icon.filled {
+    .level-circle.current-node .star-icon.filled {
       color: #ffea00;
       filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
     }
 
+    .level-circle.locked-node .star-icon {
+      color: #79849e;
+    }
+
+    .level-circle .lock-icn {
+      width: 18px;
+      height: 18px;
+      fill: #4e5872;
+      margin-bottom: -2px;
+    }
+
     .level-node-label {
-      margin-top: 8px;
-      font-size: 0.72rem;
+      margin-top: 6px;
+      font-size: 0.75rem;
       font-weight: 800;
       letter-spacing: 1px;
       text-transform: uppercase;
-      white-space: nowrap;
-      background: rgba(13, 17, 26, 0.55);
-      padding: 2px 10px;
-      border-radius: 10px;
     }
 
-    .level-node-label.lbl-current {
-      color: #ffffff;
-    }
-
-    .level-node-label.lbl-locked {
-      color: #627193;
-    }
-
-    .level-node-label.lbl-cleared {
-      color: #38ef7d;
-    }
-
-    /* Floating scroll-to-current FAB */
-    .scroll-fab {
-      position: absolute;
-      right: 16px;
-      bottom: 16px;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: linear-gradient(180deg, #3ceb8b 0%, #15aa65 100%);
-      border: 3px solid #82ffb0;
-      box-shadow: 0 6px 0 #0d6e3e, 0 8px 18px rgba(40, 205, 86, 0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 5;
-      transition: all 0.15s ease;
-      animation: fabBob 2.2s ease-in-out infinite alternate;
-    }
-    .scroll-fab:active {
-      transform: translateY(5px);
-      box-shadow: 0 1px 0 #0d6e3e, 0 2px 8px rgba(40, 205, 86, 0.3);
-    }
-    @keyframes fabBob {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-5px); }
-    }
-    .scroll-fab svg { width: 24px; height: 24px; fill: #ffffff; }
+    .level-node-label.lbl-current { color: #ffffff; }
+    .level-node-label.lbl-locked { color: #627193; }
+    .level-node-label.lbl-cleared { color: #38ef7d; }
 
     .start-prompt-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-      flex-shrink: 0;
-    }
-
-    @media (max-width: 640px) {
-      .start-prompt-container { margin-top: 8px; gap: 6px; }
-      .play-level-btn { padding: 13px 24px; font-size: 1.1rem; }
+      gap: 10px;
+      margin-top: 4px;
     }
 
     .start-prompt-text {
@@ -590,11 +428,11 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      background: rgba(13, 17, 26, 0.45);
+      background: rgba(13, 17, 26, 0.55);
       padding: 8px 20px;
       border-radius: 30px;
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       pointer-events: auto;
     }
 
@@ -618,8 +456,9 @@
       left: 0;
       height: 100%;
       width: 0%;
-      background: #ffffff;
+      background: #51e2f5;
       border-radius: 4px;
+      box-shadow: 0 0 10px #51e2f5;
     }
 
     .progress-bar-dot {
@@ -635,14 +474,13 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
 
-    /* Floating instructional hint */
     #game-instruction {
       position: absolute;
       bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(13, 17, 26, 0.65);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(13, 17, 26, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       color: #ffffff;
       padding: 12px 28px;
       border-radius: 30px;
@@ -656,6 +494,62 @@
       z-index: 25;
       white-space: nowrap;
     }
+
+    /* Victory Level Complete Modal */
+    #victory-modal-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      background: rgba(13, 17, 26, 0.75);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    #victory-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .victory-card {
+      background: #141824;
+      border: 3px solid #28ef7d;
+      box-shadow: 0 0 35px rgba(40, 239, 125, 0.35);
+      border-radius: 28px;
+      padding: 28px 36px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #victory-modal-overlay.active .victory-card {
+      transform: scale(1);
+    }
+
+    .victory-stars {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .victory-star-icon {
+      font-size: 3rem;
+      color: #2b334a;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .victory-star-icon.earned {
+      color: #ffca28;
+      text-shadow: 0 0 20px rgba(255, 202, 40, 0.8);
+      transform: scale(1.15);
+    }
   </style>
 </head>
 <body>
@@ -664,6 +558,7 @@
     <!-- Game Canvas -->
     <canvas id="gameCanvas"></canvas>
 
+    <!-- Main Menu Screen -->
     <div id="main-menu-screen" class="screen-overlay">
       <div class="flex flex-col items-center gap-6 text-center max-w-md px-4">
         <div class="game-logo">STICKMAN HOOK</div>
@@ -700,7 +595,11 @@
         
         <!-- Header Section -->
         <div class="modal-header">
-          <div class="crumb" id="modal-crumb">WORLD 1 • LEVELS 1-10</div>
+          <button class="close-btn" id="modal-home-btn" title="Home Menu" style="left: 0; right: auto;">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+          </button>
           <div class="title">STICKMAN HOOK</div>
           <div class="stats-line" id="modal-stats-text">Unlocked: Level 1 / 50 • Total Stars: ⭐0</div>
           <button class="close-btn" id="modal-close-btn" title="Close Menu">
@@ -710,20 +609,14 @@
           </button>
         </div>
 
-        <!-- World Selector Icon Tabs -->
+        <!-- World Selector Scroll Tabs -->
         <div class="world-tabs-container" id="world-tabs-list">
           <!-- Dynamically generated tabs -->
         </div>
 
-        <!-- Winding, scrollable level path -->
-        <div class="level-path-scroll" id="level-path-scroll">
-          <svg class="path-line-svg" id="path-line-svg"></svg>
-          <div class="level-path-container" id="level-grid-container">
-            <!-- Dynamically populated diamond level nodes -->
-          </div>
-          <button class="scroll-fab" id="scroll-fab-btn" title="Jump to current level">
-            <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
-          </button>
+        <!-- 5x2 Circular Level Buttons Grid -->
+        <div class="level-grid" id="level-grid-container">
+          <!-- Dynamically populated 10 level nodes -->
         </div>
 
         <!-- Bottom Start Call to Action -->
@@ -735,6 +628,26 @@
       </div>
     </div>
 
+    <!-- Victory Overlay Screen -->
+    <div id="victory-modal-overlay">
+      <div class="victory-card">
+        <h2 class="text-3xl font-black text-emerald-400 tracking-wider">LEVEL COMPLETED!</h2>
+        <div class="victory-stars">
+          <span class="victory-star-icon" id="v-star-1">★</span>
+          <span class="victory-star-icon" id="v-star-2">★</span>
+          <span class="victory-star-icon" id="v-star-3">★</span>
+        </div>
+        <div class="text-gray-300 font-bold text-lg mb-1" id="victory-flips-text">Air Flips: 0</div>
+        <div class="text-emerald-400 font-black text-2xl mb-6" id="victory-score-text">SCORE: 1,200</div>
+        
+        <div class="flex gap-3 justify-center">
+          <button id="victory-replay-btn" class="btn-3d btn-blue text-base py-3 px-6">REPLAY</button>
+          <button id="victory-next-btn" class="btn-3d btn-green text-base py-3 px-6">NEXT LEVEL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUD Overlay -->
     <div id="hud-layer" style="display: none;">
       <button class="hud-btn" id="hud-restart-btn" title="Restart Level">
         <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
@@ -751,11 +664,18 @@
         <span class="hud-lvl-num" id="hud-next-lvl">2</span>
       </div>
 
-      <button class="hud-btn" id="hud-menu-btn" title="Level Select">
-        <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-        </svg>
-      </button>
+      <div class="flex gap-2.5 pointer-events-auto">
+        <button class="hud-btn" id="hud-menu-btn" title="Level Select">
+          <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+          </svg>
+        </button>
+        <button class="hud-btn" id="hud-home-btn" title="Main Menu">
+          <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <div id="game-instruction" style="display: none;">HOLD MOUSE / SPACE TO HOOK</div>
@@ -778,17 +698,17 @@
     return audioCtx;
   }
 
-  function playHookSound() {
+  function playHookSound(pitchFactor = 1.0) {
     try {
       const ctx = getAudioContext();
       if (!ctx) return;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(320, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(750, ctx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+      osc.frequency.setValueAtTime(320 * pitchFactor, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(780 * pitchFactor, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
@@ -803,14 +723,14 @@
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(160, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(540, ctx.currentTime + 0.14);
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.14);
+      osc.frequency.setValueAtTime(140, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(620, ctx.currentTime + 0.16);
+      gain.gain.setValueAtTime(0.35, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.14);
+      osc.stop(ctx.currentTime + 0.16);
     } catch(e) {}
   }
 
@@ -818,18 +738,18 @@
     try {
       const ctx = getAudioContext();
       if (!ctx) return;
-      const notes = [523.25, 659.25, 783.99, 1046.50];
+      const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
       notes.forEach((freq, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = 'sine';
+        osc.type = 'triangle';
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.3);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime + idx * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.35);
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.start(ctx.currentTime + idx * 0.08);
-        osc.stop(ctx.currentTime + idx * 0.08 + 0.3);
+        osc.start(ctx.currentTime + idx * 0.07);
+        osc.stop(ctx.currentTime + idx * 0.07 + 0.35);
       });
     } catch(e) {}
   }
@@ -841,14 +761,14 @@
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(150, ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(50, ctx.currentTime + 0.22);
+      osc.frequency.setValueAtTime(160, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(40, ctx.currentTime + 0.25);
       gain.gain.setValueAtTime(0.25, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.22);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.22);
+      osc.stop(ctx.currentTime + 0.25);
     } catch(e) {}
   }
 
@@ -858,25 +778,10 @@
   let DPR = Math.min(window.devicePixelRatio || 1, 2);
   let W = 0, H = 0;
 
-  // Haptic feedback helper — used across all interactive UI for a tactile feel
-  function haptic(pattern) {
-    try {
-      if (navigator.vibrate) navigator.vibrate(pattern || 12);
-    } catch (e) {}
-  }
-
-  const WORLDS = [
-    { id: 0, name: "World 1", icon: "🪝" },
-    { id: 1, name: "World 2", icon: "🌀" },
-    { id: 2, name: "World 3", icon: "🔥" },
-    { id: 3, name: "World 4", icon: "⚡" },
-    { id: 4, name: "World 5", icon: "🏆" }
-  ];
-
   // Level & Progress Persistence
   let currentLevelIdx = 0;
   let selectedLevelIdx = 0;
-  let activeWorldTab = 0; // 0: Levels 1-10, 1: 11-20, 2: 21-30, 3: 31-40, 4: 41-50
+  let activeWorldTab = 0;
   let maxUnlockedLevel = parseInt(localStorage.getItem('sh_unlocked_lvl') || '0', 10);
   let levelStarsMap = JSON.parse(localStorage.getItem('sh_stars_map') || '{"0": 3}');
 
@@ -893,10 +798,19 @@
   let hazards = [];
   let targetHook = null;
   let particles = [];
+  let floatingTexts = [];
+  let speedLines = [];
+  let skyMotes = [];
   let cameraX = 0;
+  let screenShake = 0;
 
   let lastAttachedHook = null;
   let detachCooldown = 0;
+
+  // Trick & Flip tracking
+  let airRotations = 0;
+  let totalFlipsInLevel = 0;
+  let lastBodyAngle = 0;
 
   const GRAVITY = 1550;
   const player = {
@@ -911,14 +825,29 @@
     angle: 0,
     angularVelocity: 0,
     bodyAngle: 0,
+    squashX: 1,
+    squashY: 1,
     trail: []
   };
+
+  for (let i = 0; i < 35; i++) {
+    skyMotes.push({
+      x: Math.random() * 2000,
+      y: Math.random() * 800,
+      radius: 1 + Math.random() * 2.2,
+      alpha: 0.15 + Math.random() * 0.45,
+      speedX: -10 + Math.random() * 20,
+      speedY: -8 + Math.random() * 16,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
 
   // UI Element References
   const mainMenuScreen = document.getElementById("main-menu-screen");
   const levelSelectScreen = document.getElementById("level-select-screen");
   const hudLayer = document.getElementById("hud-layer");
   const gameInstruction = document.getElementById("game-instruction");
+  const victoryOverlay = document.getElementById("victory-modal-overlay");
 
   const mainPlayBtn = document.getElementById("main-play-btn");
   const mainLevelsBtn = document.getElementById("main-levels-btn");
@@ -927,13 +856,13 @@
 
   const worldTabsList = document.getElementById("world-tabs-list");
   const levelGridContainer = document.getElementById("level-grid-container");
-  const levelPathScroll = document.getElementById("level-path-scroll");
-  const pathLineSvg = document.getElementById("path-line-svg");
-  const scrollFabBtn = document.getElementById("scroll-fab-btn");
-  const modalCrumb = document.getElementById("modal-crumb");
   const modalStatsText = document.getElementById("modal-stats-text");
   const modalCloseBtn = document.getElementById("modal-close-btn");
+  const modalHomeBtn = document.getElementById("modal-home-btn");
   const modalPlayBtn = document.getElementById("modal-play-btn");
+
+  const victoryReplayBtn = document.getElementById("victory-replay-btn");
+  const victoryNextBtn = document.getElementById("victory-next-btn");
 
   const hudCurrentLvl = document.getElementById("hud-current-lvl");
   const hudNextLvl = document.getElementById("hud-next-lvl");
@@ -941,6 +870,7 @@
   const hudBarDot = document.getElementById("hud-bar-dot");
   const hudRestartBtn = document.getElementById("hud-restart-btn");
   const hudMenuBtn = document.getElementById("hud-menu-btn");
+  const hudHomeBtn = document.getElementById("hud-home-btn");
 
   function resizeCanvas() {
     W = window.innerWidth;
@@ -970,168 +900,116 @@
 
   function renderWorldTabs() {
     worldTabsList.innerHTML = "";
+    const WORLDS = [
+      { id: 0, name: "World 1 (1-10)" },
+      { id: 1, name: "World 2 (11-20)" },
+      { id: 2, name: "World 3 (21-30)" },
+      { id: 3, name: "World 4 (31-40)" },
+      { id: 4, name: "World 5 (41-50)" }
+    ];
 
     WORLDS.forEach((w) => {
       let btn = document.createElement("button");
       btn.className = "world-tab-btn" + (w.id === activeWorldTab ? " active-tab" : "");
-      btn.innerHTML = `<span class="tab-icon-box">${w.icon}</span><span class="tab-label">${w.name}</span>`;
+      btn.textContent = w.name;
       btn.onclick = () => {
-        if (activeWorldTab === w.id) return;
-        haptic(10);
         activeWorldTab = w.id;
         renderWorldTabs();
         renderLevelGrid();
       };
       worldTabsList.appendChild(btn);
     });
-
-    let w = WORLDS[activeWorldTab];
-    modalCrumb.textContent = `${w.name.toUpperCase()} • LEVELS ${activeWorldTab * 10 + 1}-${activeWorldTab * 10 + 10}`;
   }
 
-  // Renders the current world's levels as a winding, scrollable 3D diamond path
-  // (Duolingo/Sololearn-style skill path) and draws the connecting road with SVG.
   function renderLevelGrid() {
     levelGridContainer.innerHTML = "";
     let startLvl = activeWorldTab * 10;
     let endLvl = startLvl + 10;
-    let count = endLvl - startLvl;
 
-    let isMobile = window.innerWidth <= 640;
-    let nodeSize = isMobile ? 64 : 82;
-    let vGap = isMobile ? 108 : 132;
-    let topPad = isMobile ? 50 : 60;
-    let containerWidth = levelPathScroll.clientWidth || 400;
-    let amplitude = Math.min(containerWidth * 0.30, isMobile ? 90 : 130);
-    let centerX = containerWidth / 2;
-
-    let points = [];
-    for (let n = 0; n < count; n++) {
-      let x = centerX + amplitude * Math.sin(n * 1.05 + 0.4);
-      let y = topPad + n * vGap;
-      points.push({ x, y });
-    }
-    let totalHeight = topPad * 2 + (count - 1) * vGap + nodeSize;
-    levelGridContainer.style.height = totalHeight + "px";
-
-    // Draw the winding road (base path + a green "cleared" progress overlay)
-    pathLineSvg.setAttribute("viewBox", `0 0 ${containerWidth} ${totalHeight}`);
-    pathLineSvg.setAttribute("preserveAspectRatio", "none");
-    pathLineSvg.style.height = totalHeight + "px";
-
-    let clearedUpto = -1;
-    for (let n = 0; n < count; n++) {
-      if (startLvl + n <= maxUnlockedLevel) clearedUpto = n;
-    }
-
-    function buildPathD(upToIdx) {
-      if (upToIdx <= 0) return "";
-      let d = `M ${points[0].x} ${points[0].y}`;
-      for (let n = 1; n <= upToIdx; n++) d += ` L ${points[n].x} ${points[n].y}`;
-      return d;
-    }
-
-    let fullD = buildPathD(count - 1);
-    let clearedD = buildPathD(clearedUpto);
-
-    pathLineSvg.innerHTML = `
-      <path d="${fullD}" fill="none" stroke="#252c42" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="${fullD}" fill="none" stroke="#31395a" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 20"/>
-      ${clearedD ? `<path d="${clearedD}" fill="none" stroke="#2ecf74" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
-    `;
-
-    for (let n = 0; n < count; n++) {
-      let i = startLvl + n;
+    for (let i = startLvl; i < endLvl; i++) {
       let isUnlocked = i <= maxUnlockedLevel;
       let isCurrent = i === selectedLevelIdx;
-      let starsCount = levelStarsMap[i] || 0;
 
       let wrapper = document.createElement("div");
-      let stateClass = isCurrent && isUnlocked ? "current-node" : (isUnlocked ? "cleared-node" : "locked-node");
-      wrapper.className = "path-node-wrapper " + stateClass;
-      wrapper.style.left = points[n].x + "px";
-      wrapper.style.top = points[n].y + "px";
-      wrapper.dataset.levelIdx = i;
+      wrapper.className = "level-node-wrapper";
 
-      let node = document.createElement("div");
-      node.className = "path-node";
-
-      let face = document.createElement("div");
-      face.className = "node-face";
-
-      let inner = document.createElement("div");
-      inner.className = "node-inner";
-
+      let circle = document.createElement("div");
+      let nodeClass = "level-circle ";
       if (isCurrent && isUnlocked) {
+        nodeClass += "current-node";
+      } else if (isUnlocked) {
+        nodeClass += "unlocked-node";
+      } else {
+        nodeClass += "locked-node";
+      }
+      circle.className = nodeClass;
+
+      let starsCount = levelStarsMap[i] || 0;
+
+      if (isUnlocked) {
         let numText = document.createElement("div");
         numText.className = "level-num-text";
         numText.textContent = i + 1;
-        inner.appendChild(numText);
-      } else if (isUnlocked) {
-        let checkSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        checkSvg.setAttribute("class", "check-icn");
-        checkSvg.setAttribute("viewBox", "0 0 24 24");
-        checkSvg.innerHTML = `<path d="M9 16.2l-3.5-3.5L4 14.2l5 5 11-11-1.5-1.5z"/>`;
-        inner.appendChild(checkSvg);
+        circle.appendChild(numText);
+
+        let starsRow = document.createElement("div");
+        starsRow.className = "stars-row";
+        for (let s = 1; s <= 3; s++) {
+          let starSpan = document.createElement("span");
+          starSpan.className = "star-icon" + (s <= starsCount ? " filled" : "");
+          starSpan.textContent = "★";
+          starsRow.appendChild(starSpan);
+        }
+        circle.appendChild(starsRow);
       } else {
         let lockSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         lockSvg.setAttribute("class", "lock-icn");
         lockSvg.setAttribute("viewBox", "0 0 24 24");
         lockSvg.innerHTML = `<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>`;
-        inner.appendChild(lockSvg);
+        circle.appendChild(lockSvg);
+
+        let numText = document.createElement("div");
+        numText.className = "level-num-text";
+        numText.style.fontSize = "1.2rem";
+        numText.textContent = i + 1;
+        circle.appendChild(numText);
+
+        let starsRow = document.createElement("div");
+        starsRow.className = "stars-row";
+        for (let s = 1; s <= 3; s++) {
+          let starSpan = document.createElement("span");
+          starSpan.className = "star-icon";
+          starSpan.textContent = "☆";
+          starsRow.appendChild(starSpan);
+        }
+        circle.appendChild(starsRow);
       }
 
-      face.appendChild(inner);
-      node.appendChild(face);
-      wrapper.appendChild(node);
-
-      // Stars row (only meaningful once unlocked)
-      let starsRow = document.createElement("div");
-      starsRow.className = "stars-row";
-      for (let s = 1; s <= 3; s++) {
-        let starSpan = document.createElement("span");
-        starSpan.className = "star-icon" + (isUnlocked && s <= starsCount ? " filled" : "");
-        starSpan.textContent = isUnlocked && s <= starsCount ? "★" : "☆";
-        starsRow.appendChild(starSpan);
-      }
-      wrapper.appendChild(starsRow);
-
-      // Label underneath node
       let label = document.createElement("div");
       if (isCurrent && isUnlocked) {
         label.className = "level-node-label lbl-current";
-        label.textContent = `LEVEL ${i + 1} • CURRENT`;
+        label.textContent = "CURRENT";
       } else if (isUnlocked) {
         label.className = "level-node-label lbl-cleared";
-        label.textContent = `LEVEL ${i + 1} • CLEAR`;
+        label.textContent = "CLEAR";
       } else {
         label.className = "level-node-label lbl-locked";
-        label.textContent = `LEVEL ${i + 1} • LOCKED`;
+        label.textContent = "LOCKED";
       }
+
+      wrapper.appendChild(circle);
       wrapper.appendChild(label);
 
       if (isUnlocked) {
         wrapper.onclick = () => {
-          haptic(isCurrent ? 8 : 16);
           selectedLevelIdx = i;
           renderLevelGrid();
           updateModalPlayBtnText();
         };
-      } else {
-        wrapper.onclick = () => haptic([8, 40, 8]);
       }
 
       levelGridContainer.appendChild(wrapper);
     }
-  }
-
-  // Smoothly scrolls the path so the currently-selected node is centered in view
-  function scrollToSelectedNode(smooth) {
-    let target = levelGridContainer.querySelector(`.path-node-wrapper[data-level-idx="${selectedLevelIdx}"]`);
-    if (!target) return;
-    let targetTop = parseFloat(target.style.top) || 0;
-    let destination = Math.max(0, targetTop - levelPathScroll.clientHeight / 2 + 40);
-    levelPathScroll.scrollTo({ top: destination, behavior: smooth ? "smooth" : "auto" });
   }
 
   function updateModalPlayBtnText() {
@@ -1148,25 +1026,17 @@
 
     mainMenuScreen.classList.add("hidden-screen");
     levelSelectScreen.classList.remove("hidden-screen");
+    victoryOverlay.classList.remove("active");
     hudLayer.style.display = "none";
     gameInstruction.style.display = "none";
-
-    // Land the player on their current level in the winding path
-    requestAnimationFrame(() => scrollToSelectedNode(false));
   }
-
-  let pathResizeTimer = null;
-  window.addEventListener("resize", () => {
-    if (appState !== "LEVEL_SELECT") return;
-    clearTimeout(pathResizeTimer);
-    pathResizeTimer = setTimeout(() => renderLevelGrid(), 120);
-  });
 
   function openHomeScreen() {
     appState = "HOME";
     updateGlobalStatsUI();
     mainMenuScreen.classList.remove("hidden-screen");
     levelSelectScreen.classList.add("hidden-screen");
+    victoryOverlay.classList.remove("active");
     hudLayer.style.display = "none";
     gameInstruction.style.display = "none";
   }
@@ -1180,10 +1050,15 @@
     trampolines = [];
     hazards = [];
     particles = [];
+    floatingTexts = [];
+    speedLines = [];
     lastAttachedHook = null;
     detachCooldown = 0;
+    airRotations = 0;
+    totalFlipsInLevel = 0;
+    screenShake = 0;
 
-    levelLength = 3000 + levelIdx * 600;
+    levelLength = 2800 + levelIdx * 500;
     startPos = { x: 120, y: H * 0.45 };
     finishX = levelLength - 220;
 
@@ -1195,16 +1070,19 @@
     player.anchor = null;
     player.trail = [];
     player.bodyAngle = 0;
+    player.squashX = 1;
+    player.squashY = 1;
+    lastBodyAngle = 0;
 
-    let baseSpacing = 180 + Math.min(levelIdx * 8, 140);
-    let movingHookChance = Math.min(levelIdx * 0.08, 0.65);
+    let baseSpacing = 180 + Math.min(levelIdx * 8, 130);
+    let movingHookChance = Math.min(levelIdx * 0.08, 0.6);
     let trampolineChance = Math.max(0.2, 0.75 - levelIdx * 0.02);
-    let hazardChance = levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.1, 0.4) : 0;
+    let hazardChance = levelIdx >= 3 ? Math.min((levelIdx - 2) * 0.1, 0.38) : 0;
 
     let currX = 280;
 
     while (currX < finishX - 250) {
-      let spacing = baseSpacing + Math.random() * 70;
+      let spacing = baseSpacing + Math.random() * 65;
       currX += spacing;
 
       let hookY = H * (0.2 + Math.random() * 0.35);
@@ -1223,9 +1101,8 @@
         movePhase: Math.random() * Math.PI * 2
       });
 
-      // Spawn hazards at safer offsets to maintain playability
       if (hazardChance > 0 && Math.random() < hazardChance && currX < finishX - 400) {
-        let hazW = 60 + Math.random() * 50;
+        let hazW = 55 + Math.random() * 45;
         let hazY = hookY + 180 + Math.random() * 40;
         if (hazY < H - 90) {
           hazards.push({ x: currX - hazW / 2, y: hazY, w: hazW, h: 20 });
@@ -1240,7 +1117,6 @@
       }
     }
 
-    // Launch pad trampoline
     trampolines.unshift({
       x: startPos.x - 40,
       y: startPos.y + 110,
@@ -1255,6 +1131,7 @@
 
     mainMenuScreen.classList.add("hidden-screen");
     levelSelectScreen.classList.add("hidden-screen");
+    victoryOverlay.classList.remove("active");
     hudLayer.style.display = "flex";
     gameInstruction.style.display = "block";
     gameInstruction.style.opacity = "1";
@@ -1298,9 +1175,12 @@
     player.angularVelocity = angVel;
     lastAttachedHook = target;
 
-    spawnParticles(player.x, player.y, "#ffffff", 8);
-    playHookSound();
-    haptic(8);
+    // Pitch tweak based on speed
+    let currentSpeed = Math.hypot(player.vx, player.vy);
+    let pitch = Math.min(1.5, Math.max(0.8, currentSpeed / 600));
+
+    spawnParticles(player.x, player.y, "#ffffff", 10);
+    playHookSound(pitch);
   }
 
   function detachHook() {
@@ -1315,12 +1195,47 @@
 
     player.attached = false;
     player.anchor = null;
-    detachCooldown = 0.12; // Brief re-attach prevention window
+    detachCooldown = 0.12;
+
+    // Reset air flip tracker on release
+    airRotations = 0;
+    lastBodyAngle = player.bodyAngle;
+  }
+
+  function spawnFloatingText(x, y, text, color = "#ffea00") {
+    floatingTexts.push({
+      x: x,
+      y: y,
+      text: text,
+      color: color,
+      life: 1.0,
+      vy: -40
+    });
+  }
+
+  function showVictoryModal(stars, flips) {
+    appState = "WIN";
+    victoryOverlay.classList.add("active");
+
+    const s1 = document.getElementById("v-star-1");
+    const s2 = document.getElementById("v-star-2");
+    const s3 = document.getElementById("v-star-3");
+
+    s1.classList.remove("earned");
+    s2.classList.remove("earned");
+    s3.classList.remove("earned");
+
+    setTimeout(() => { if (stars >= 1) s1.classList.add("earned"); }, 150);
+    setTimeout(() => { if (stars >= 2) s2.classList.add("earned"); }, 350);
+    setTimeout(() => { if (stars >= 3) s3.classList.add("earned"); }, 550);
+
+    document.getElementById("victory-flips-text").textContent = `Air Flips: ${flips}`;
+    document.getElementById("victory-score-text").textContent = `SCORE: ${(1000 + flips * 250).toLocaleString()}`;
   }
 
   function handleInputDown(e) {
     if (appState !== "PLAYING" && appState !== "DEAD") return;
-    if (e && e.target && e.target.closest("#hud-layer, .screen-overlay")) return;
+    if (e && e.target && e.target.closest("#hud-layer, .screen-overlay, #victory-modal-overlay")) return;
 
     isPointerDown = true;
     gameInstruction.style.opacity = "0";
@@ -1354,17 +1269,21 @@
     if (e.code === "Space") handleInputUp();
   });
 
-  mainPlayBtn.onclick = () => { haptic(20); startLevel(maxUnlockedLevel); };
-  mainLevelsBtn.onclick = () => { haptic(15); openLevelSelectScreen(); };
-  modalCloseBtn.onclick = () => { haptic(10); openHomeScreen(); };
-  modalPlayBtn.onclick = () => { haptic(20); startLevel(selectedLevelIdx); };
-  hudRestartBtn.onclick = () => { haptic(15); startLevel(currentLevelIdx); };
-  hudMenuBtn.onclick = () => { haptic(15); openLevelSelectScreen(); };
-  scrollFabBtn.onclick = () => { haptic(12); scrollToSelectedNode(true); };
+  mainPlayBtn.onclick = () => startLevel(maxUnlockedLevel);
+  mainLevelsBtn.onclick = () => openLevelSelectScreen();
+  modalCloseBtn.onclick = () => openHomeScreen();
+  if (modalHomeBtn) modalHomeBtn.onclick = () => openHomeScreen();
+  modalPlayBtn.onclick = () => startLevel(selectedLevelIdx);
+  hudRestartBtn.onclick = () => startLevel(currentLevelIdx);
+  hudMenuBtn.onclick = () => openLevelSelectScreen();
+  if (hudHomeBtn) hudHomeBtn.onclick = () => openHomeScreen();
+
+  victoryReplayBtn.onclick = () => startLevel(currentLevelIdx);
+  victoryNextBtn.onclick = () => startLevel(selectedLevelIdx);
 
   let lastTime = performance.now();
   let accumTime = 0;
-  const FIXED_DT = 1 / 120; // 120Hz physics sub-stepping
+  const FIXED_DT = 1 / 120;
 
   function stepPhysics(dt) {
     if (appState !== "PLAYING") return;
@@ -1386,6 +1305,12 @@
       player.vy = -r * Math.sin(player.angle) * player.angularVelocity;
       player.bodyAngle = player.angle;
 
+      // Squash and stretch along tension
+      let speed = Math.hypot(player.vx, player.vy);
+      let stretch = Math.min(1.4, 1 + speed / 1600);
+      player.squashX = stretch;
+      player.squashY = 1 / stretch;
+
       if (!isPointerDown) {
         detachHook();
       }
@@ -1395,18 +1320,52 @@
       player.y += player.vy * dt;
 
       if (player.vx < 260) player.vx += 120 * dt;
-      player.bodyAngle = Math.atan2(player.vy, player.vx);
+
+      // Spin in air for flips
+      let speed = Math.hypot(player.vx, player.vy);
+      let spinSpeed = (player.vx / 320) * 8.0;
+      let prevAngle = player.bodyAngle;
+      player.bodyAngle += spinSpeed * dt;
+
+      let deltaAng = Math.abs(player.bodyAngle - prevAngle);
+      airRotations += deltaAng;
+
+      if (airRotations >= Math.PI * 2) {
+        airRotations -= Math.PI * 2;
+        totalFlipsInLevel++;
+        spawnFloatingText(player.x, player.y - 20, "FLIP! +250", "#28ef7d");
+        spawnParticles(player.x, player.y, "#28ef7d", 8);
+      }
+
+      let stretch = Math.min(1.35, 1 + speed / 1800);
+      player.squashX = stretch;
+      player.squashY = 1 / stretch;
 
       if (isPointerDown) {
         attachHook();
       }
     }
 
-    player.trail.push({ x: player.x, y: player.y });
-    if (player.trail.length > 8) player.trail.shift();
+    // Dynamic Trail
+    player.trail.push({ x: player.x, y: player.y, isBall: !player.attached && Math.hypot(player.vx, player.vy) > 650 });
+    if (player.trail.length > 10) player.trail.shift();
 
+    // High speed wind lines
+    let curSpeed = Math.hypot(player.vx, player.vy);
+    if (curSpeed > 680 && Math.random() < 0.35) {
+      speedLines.push({
+        x: player.x - (player.vx * 0.08) + (Math.random() * 30 - 15),
+        y: player.y - (player.vy * 0.08) + (Math.random() * 30 - 15),
+        vx: player.vx * 0.25,
+        vy: player.vy * 0.25,
+        len: 20 + Math.random() * 30,
+        life: 0.25
+      });
+    }
+
+    // Check Trampolines
     for (let t of trampolines) {
-      if (t.squish > 0) t.squish = Math.max(0, t.squish - dt * 4);
+      if (t.squish > 0) t.squish = Math.max(0, t.squish - dt * 4.5);
 
       if (
         player.vy > 0 &&
@@ -1415,16 +1374,19 @@
         player.y + player.radius >= t.y &&
         player.y - player.radius <= t.y + t.h
       ) {
-        player.vy = -Math.max(780, Math.abs(player.vy) * 0.95);
-        player.vx = Math.min(Math.max(player.vx * 1.05, 360), 820);
+        player.vy = -Math.max(820, Math.abs(player.vy) * 0.96);
+        player.vx = Math.min(Math.max(player.vx * 1.06, 380), 850);
         player.y = t.y - player.radius;
         t.squish = 1;
-        spawnParticles(player.x, t.y, "#ffffff", 14);
+        screenShake = 6;
+        spawnParticles(player.x, t.y, "#ffffff", 16);
+        spawnFloatingText(player.x, t.y - 15, "BOOST!", "#51e2f5");
         playBounceSound();
         if (player.attached) detachHook();
       }
     }
 
+    // Check Hazards
     for (let hz of hazards) {
       if (
         player.x + player.radius > hz.x &&
@@ -1432,9 +1394,9 @@
         player.y + player.radius > hz.y &&
         player.y - player.radius < hz.y + hz.h
       ) {
-        spawnParticles(player.x, player.y, "#ff4444", 25);
+        screenShake = 14;
+        spawnParticles(player.x, player.y, "#ff4444", 30);
         playFailSound();
-        haptic([15, 40, 15]);
         appState = "DEAD";
         setTimeout(() => {
           if (appState === "DEAD") startLevel(currentLevelIdx);
@@ -1443,32 +1405,30 @@
       }
     }
 
+    // Off-screen Fall
     if (player.y > H + 120) {
       playFailSound();
-      haptic([15, 40, 15]);
       appState = "DEAD";
       setTimeout(() => {
         if (appState === "DEAD") startLevel(currentLevelIdx);
       }, 500);
     }
 
+    // Finish Line Reached
     if (player.x >= finishX) {
-      appState = "WIN";
-      spawnParticles(finishX, H * 0.4, "#ffffff", 50);
+      spawnParticles(finishX, H * 0.4, "#ffffff", 60);
       playWinSound();
-      haptic([10, 30, 10, 30, 20]);
 
+      let earnedStars = 3;
       if (currentLevelIdx >= maxUnlockedLevel) {
         maxUnlockedLevel = Math.min(49, currentLevelIdx + 1);
       }
-      levelStarsMap[currentLevelIdx] = 3;
+      levelStarsMap[currentLevelIdx] = earnedStars;
       saveProgress();
 
       selectedLevelIdx = Math.min(49, currentLevelIdx + 1);
 
-      setTimeout(() => {
-        openLevelSelectScreen();
-      }, 1000);
+      showVictoryModal(earnedStars, totalFlipsInLevel);
     }
   }
 
@@ -1476,6 +1436,7 @@
     animTime += dt;
     ringRotation += dt * 3.5;
     if (detachCooldown > 0) detachCooldown -= dt;
+    if (screenShake > 0) screenShake = Math.max(0, screenShake - dt * 25);
 
     for (let h of hooks) {
       if (h.isMoving) {
@@ -1485,7 +1446,6 @@
     }
 
     if (appState === "PLAYING") {
-      // Sub-step physics integration for 60Hz/120Hz/144Hz stability
       accumTime += dt;
       let steps = 0;
       while (accumTime >= FIXED_DT && steps < 4) {
@@ -1495,7 +1455,6 @@
       }
       if (steps >= 4) accumTime = 0;
 
-      // Exponential smooth camera lerp
       let targetCamX = player.x - W * 0.28;
       cameraX += (targetCamX - cameraX) * (1 - Math.exp(-12 * dt));
 
@@ -1505,12 +1464,37 @@
       cameraX += 60 * dt;
     }
 
+    // Particles update
     for (let p of particles) {
       p.x += p.vx * dt;
       p.y += p.vy * dt;
       p.life -= dt;
     }
     particles = particles.filter((p) => p.life > 0);
+
+    // Speed lines update
+    for (let sl of speedLines) {
+      sl.x += sl.vx * dt;
+      sl.y += sl.vy * dt;
+      sl.life -= dt;
+    }
+    speedLines = speedLines.filter((sl) => sl.life > 0);
+
+    // Floating text update
+    for (let ft of floatingTexts) {
+      ft.y += ft.vy * dt;
+      ft.life -= dt;
+    }
+    floatingTexts = floatingTexts.filter((ft) => ft.life > 0);
+
+    for (let sm of skyMotes) {
+      sm.x += sm.speedX * dt;
+      sm.y += sm.speedY * dt;
+      if (sm.x < 0) sm.x = 2000;
+      if (sm.x > 2000) sm.x = 0;
+      if (sm.y < 0) sm.y = 800;
+      if (sm.y > 800) sm.y = 0;
+    }
   }
 
   function updateProgressBar(progress) {
@@ -1535,19 +1519,138 @@
     }
   }
 
+  function drawGradientWavesSky() {
+    // 1. Dynamic base sky gradient
+    let t = animTime * 0.15;
+    let skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+    let color1 = `hsl(${195 + Math.sin(t) * 10}, 55%, 20%)`;
+    let color2 = `hsl(${170 + Math.cos(t * 0.7) * 10}, 45%, 30%)`;
+    let color3 = `hsl(${145 + Math.sin(t * 1.1) * 10}, 40%, 22%)`;
+
+    skyGrad.addColorStop(0, color1);
+    skyGrad.addColorStop(0.5, color2);
+    skyGrad.addColorStop(1, color3);
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // 2. Ambient Sun Glow
+    ctx.save();
+    let sunX = W * 0.75 - (cameraX * 0.04) % (W * 1.5);
+    let sunY = H * 0.22;
+    let sunGlow = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 280);
+    sunGlow.addColorStop(0, "rgba(255, 245, 200, 0.35)");
+    sunGlow.addColorStop(0.5, "rgba(81, 226, 245, 0.12)");
+    sunGlow.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = sunGlow;
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, 280, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, 32, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 255, 240, 0.75)";
+    ctx.shadowColor = "rgba(81, 226, 245, 0.6)";
+    ctx.shadowBlur = 20;
+    ctx.fill();
+    ctx.restore();
+
+    // 3. Calmed & Subtle Animated Waves
+    const WAVE_LAYERS = [
+      {
+        amplitude: 25,
+        frequency: 0.002,
+        speed: 0.6,
+        offsetY: H * 0.45,
+        colors: ["rgba(81, 226, 245, 0.12)", "rgba(113, 178, 128, 0.08)"],
+        phaseShift: 0
+      },
+      {
+        amplitude: 35,
+        frequency: 0.0015,
+        speed: -0.4,
+        offsetY: H * 0.58,
+        colors: ["rgba(19, 78, 94, 0.18)", "rgba(37, 211, 102, 0.1)"],
+        phaseShift: 2.1
+      },
+      {
+        amplitude: 40,
+        frequency: 0.0012,
+        speed: 0.8,
+        offsetY: H * 0.7,
+        colors: ["rgba(42, 130, 228, 0.15)", "rgba(32, 139, 152, 0.12)"],
+        phaseShift: 4.2
+      },
+      {
+        amplitude: 30,
+        frequency: 0.0025,
+        speed: -0.5,
+        offsetY: H * 0.82,
+        colors: ["rgba(17, 153, 142, 0.2)", "rgba(13, 17, 26, 0.35)"],
+        phaseShift: 1.5
+      }
+    ];
+
+    WAVE_LAYERS.forEach((wave, idx) => {
+      ctx.save();
+      let waveGrad = ctx.createLinearGradient(0, wave.offsetY - wave.amplitude, 0, H);
+      waveGrad.addColorStop(0, wave.colors[0]);
+      waveGrad.addColorStop(1, wave.colors[1]);
+      ctx.fillStyle = waveGrad;
+
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+
+      let step = 15;
+      let camShift = cameraX * (0.06 + idx * 0.03);
+
+      for (let x = 0; x <= W + step; x += step) {
+        let worldX = x + camShift;
+        let y = wave.offsetY +
+          Math.sin(worldX * wave.frequency + animTime * wave.speed + wave.phaseShift) * wave.amplitude +
+          Math.cos(worldX * wave.frequency * 0.6 - animTime * wave.speed * 0.7) * (wave.amplitude * 0.35);
+
+        if (x === 0) ctx.lineTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+
+      ctx.lineTo(W, H);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // 4. Sky Motes
+    ctx.save();
+    for (let sm of skyMotes) {
+      let drawX = (sm.x - cameraX * 0.12) % W;
+      if (drawX < 0) drawX += W;
+      let alpha = sm.alpha + Math.sin(animTime * 2.5 + sm.phase) * 0.15;
+
+      ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.04, alpha)})`;
+      ctx.beginPath();
+      ctx.arc(drawX, sm.y, sm.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   function draw() {
     ctx.clearRect(0, 0, W, H);
 
-    // Dynamic gradient background
-    let skyGrad = ctx.createLinearGradient(0, 0, 0, H);
-    skyGrad.addColorStop(0, "#208b98");
-    skyGrad.addColorStop(1, "#4eb5a7");
-    ctx.fillStyle = skyGrad;
-    ctx.fillRect(0, 0, W, H);
+    // Draw Soothing Waves Sky
+    drawGradientWavesSky();
 
     drawClouds();
 
     ctx.save();
+
+    // Apply Screen Shake
+    if (screenShake > 0) {
+      let rx = (Math.random() - 0.5) * screenShake;
+      let ry = (Math.random() - 0.5) * screenShake;
+      ctx.translate(rx, ry);
+    }
+
     ctx.translate(-cameraX, 0);
 
     drawFinishLine();
@@ -1555,22 +1658,44 @@
     drawHazards();
     drawHooks();
 
+    // Dynamic Elastic Rope
     if (player.attached && player.anchor) {
+      ctx.save();
       ctx.beginPath();
       ctx.moveTo(player.anchor.x, player.anchor.y);
       ctx.lineTo(player.x, player.y);
-      ctx.strokeStyle = "#ffffff";
+
+      let speed = Math.hypot(player.vx, player.vy);
+      let glowColor = speed > 600 ? "#38ef7d" : "#ffffff";
+
+      ctx.strokeStyle = glowColor;
       ctx.lineWidth = 3.5;
       ctx.lineCap = "round";
+      ctx.shadowColor = glowColor;
+      ctx.shadowBlur = 10;
       ctx.stroke();
+      ctx.restore();
     }
 
+    // Speed lines visual effect
+    for (let sl of speedLines) {
+      ctx.save();
+      ctx.strokeStyle = `rgba(255, 255, 255, ${sl.life * 2.5})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sl.x, sl.y);
+      ctx.lineTo(sl.x - sl.len, sl.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Player Trail
     for (let i = 0; i < player.trail.length; i++) {
       let p = player.trail[i];
       let alpha = (i / player.trail.length) * 0.35;
       ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, player.radius * 0.6, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, player.radius * 0.55, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -1578,6 +1703,19 @@
       drawStickman();
     }
 
+    // Floating text popups
+    for (let ft of floatingTexts) {
+      ctx.save();
+      ctx.font = "bold 16px 'Montserrat', sans-serif";
+      ctx.fillStyle = ft.color;
+      ctx.globalAlpha = Math.max(0, ft.life);
+      ctx.shadowColor = "rgba(0,0,0,0.6)";
+      ctx.shadowBlur = 6;
+      ctx.fillText(ft.text, ft.x, ft.y);
+      ctx.restore();
+    }
+
+    // Particles
     for (let p of particles) {
       ctx.fillStyle = p.color;
       ctx.globalAlpha = p.life / p.maxLife;
@@ -1591,25 +1729,23 @@
   }
 
   function drawClouds() {
-    ctx.fillStyle = "#78c2ad";
-    ctx.globalAlpha = 0.45;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
 
-    let cloudCamX = cameraX * 0.25;
+    let cloudCamX = cameraX * 0.18;
     ctx.beginPath();
-    let step = 140;
+    let step = 160;
     let startI = Math.floor(cloudCamX / step) - 1;
     let endI = startI + Math.ceil(W / step) + 3;
 
     ctx.moveTo(-50, H);
     for (let i = startI; i <= endI; i++) {
       let cx = i * step - cloudCamX;
-      let cy = H - 120 + Math.sin(i * 1.5) * 20;
-      ctx.quadraticCurveTo(cx, cy - 60, cx + step / 2, cy);
+      let cy = H - 100 + Math.sin(i * 1.5) * 18;
+      ctx.quadraticCurveTo(cx, cy - 50, cx + step / 2, cy);
     }
     ctx.lineTo(W + 50, H);
     ctx.closePath();
     ctx.fill();
-    ctx.globalAlpha = 1;
   }
 
   function drawHooks() {
@@ -1635,7 +1771,7 @@
         ctx.beginPath();
         ctx.arc(0, 0, 24, 0, Math.PI * 2);
         ctx.setLineDash([6, 6]);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
         ctx.lineWidth = 2.5;
         ctx.stroke();
         ctx.restore();
@@ -1719,51 +1855,68 @@
     ctx.save();
     ctx.translate(player.x, player.y);
 
-    let rot = player.attached ? player.angle : player.bodyAngle * 0.5;
+    let speed = Math.hypot(player.vx, player.vy);
+    let isHighSpeedBall = !player.attached && speed > 650;
+
+    let rot = player.attached ? player.angle : player.bodyAngle;
     ctx.rotate(rot);
 
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 3.5;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    // Dynamic Squash Scale
+    ctx.scale(player.squashX, player.squashY);
 
-    let cycle = Math.sin(animTime * 15);
-    let legBend = player.attached ? 6 : cycle * 8;
-
-    // Head
-    ctx.beginPath();
-    ctx.arc(0, -14, 7, 0, Math.PI * 2);
-    ctx.fillStyle = "#000000";
-    ctx.fill();
-
-    // Body Spine
-    ctx.beginPath();
-    ctx.moveTo(0, -7);
-    ctx.lineTo(0, 8);
-    ctx.stroke();
-
-    // Arms
-    ctx.beginPath();
-    if (player.attached) {
-      ctx.moveTo(0, -4);
-      ctx.lineTo(-6, -16);
-      ctx.moveTo(0, -4);
-      ctx.lineTo(6, -16);
+    if (isHighSpeedBall) {
+      // Bouncy Red/Orange Ball Mode during fast launches!
+      ctx.beginPath();
+      ctx.arc(0, 0, 11, 0, Math.PI * 2);
+      ctx.fillStyle = "#ff4757";
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "#ffffff";
+      ctx.stroke();
     } else {
-      ctx.moveTo(0, -4);
-      ctx.lineTo(-10, 2 + cycle * 4);
-      ctx.moveTo(0, -4);
-      ctx.lineTo(10, 2 - cycle * 4);
-    }
-    ctx.stroke();
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
 
-    // Legs
-    ctx.beginPath();
-    ctx.moveTo(0, 8);
-    ctx.lineTo(-7 - legBend, 20);
-    ctx.moveTo(0, 8);
-    ctx.lineTo(7 + legBend, 20);
-    ctx.stroke();
+      let cycle = Math.sin(animTime * 15);
+      let legBend = player.attached ? 6 : cycle * 8;
+
+      // Head
+      ctx.beginPath();
+      ctx.arc(0, -14, 7, 0, Math.PI * 2);
+      ctx.fillStyle = "#000000";
+      ctx.fill();
+
+      // Body Spine
+      ctx.beginPath();
+      ctx.moveTo(0, -7);
+      ctx.lineTo(0, 8);
+      ctx.stroke();
+
+      // Arms
+      ctx.beginPath();
+      if (player.attached) {
+        ctx.moveTo(0, -4);
+        ctx.lineTo(-6, -16);
+        ctx.moveTo(0, -4);
+        ctx.lineTo(6, -16);
+      } else {
+        ctx.moveTo(0, -4);
+        ctx.lineTo(-10, 2 + cycle * 4);
+        ctx.moveTo(0, -4);
+        ctx.lineTo(10, 2 - cycle * 4);
+      }
+      ctx.stroke();
+
+      // Legs
+      ctx.beginPath();
+      ctx.moveTo(0, 8);
+      ctx.lineTo(-7 - legBend, 20);
+      ctx.moveTo(0, 8);
+      ctx.lineTo(7 + legBend, 20);
+      ctx.stroke();
+    }
 
     ctx.restore();
   }
