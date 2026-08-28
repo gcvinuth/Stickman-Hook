@@ -546,29 +546,339 @@
       gap: 8px;
     }
     .shop-item-card.equipped { border-color: #38ef7d; background: rgba(56, 239, 125, 0.1); }
+
+    /* Toast Notifications (Achievements / Streak) */
+    #toast-container {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      pointer-events: none;
+      width: 92%;
+      max-width: 380px;
+    }
+
+    .toast-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #1d2334 0%, #141824 100%);
+      border: 2px solid #ffca28;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255, 202, 40, 0.35);
+      border-radius: 16px;
+      padding: 10px 16px;
+      animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), toastOut 0.4s ease forwards 2.6s;
+      width: 100%;
+    }
+
+    .toast-icon { font-size: 1.8rem; flex-shrink: 0; }
+    .toast-text-title { color: #ffca28; font-weight: 900; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; }
+    .toast-text-desc { color: #cbd5e8; font-weight: 600; font-size: 0.82rem; }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(-14px) scale(0.95); }
+    }
+
+    /* Combo HUD */
+    #combo-hud {
+      position: absolute;
+      top: 68px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 22;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+    #combo-hud .combo-num {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      color: #ffea00;
+      text-shadow: 0 0 14px rgba(255, 234, 0, 0.85), 0 3px 0 rgba(0,0,0,0.4);
+      animation: comboPulse 0.35s ease;
+    }
+    #combo-hud .combo-lbl {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #ffffff;
+      background: rgba(0,0,0,0.4);
+      padding: 1px 10px;
+      border-radius: 10px;
+      margin-top: -2px;
+    }
+    @keyframes comboPulse {
+      0% { transform: scale(1.6); }
+      100% { transform: scale(1); }
+    }
+
+    /* Achievements Modal */
+    #achievements-modal-overlay, #daily-reward-modal-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 55;
+      background: rgba(13, 17, 26, 0.85);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #achievements-modal-overlay.active, #daily-reward-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .achievements-card {
+      background: #141824;
+      border: 3px solid #ffca28;
+      box-shadow: 0 0 35px rgba(255, 202, 40, 0.3);
+      border-radius: 24px;
+      padding: 22px;
+      width: 92%;
+      max-width: 620px;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.92);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #achievements-modal-overlay.active .achievements-card { transform: scale(1); }
+
+    .achievements-list {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    .achievement-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #1d2334;
+      border: 2px solid #2d364f;
+      border-radius: 16px;
+      padding: 12px 14px;
+      opacity: 0.55;
+      filter: grayscale(0.6);
+    }
+    .achievement-row.unlocked {
+      opacity: 1;
+      filter: none;
+      border-color: #ffca28;
+      background: rgba(255, 202, 40, 0.08);
+    }
+    .achievement-row .ach-icon { font-size: 1.9rem; width: 42px; text-align: center; flex-shrink: 0; }
+    .achievement-row .ach-name { color: #ffffff; font-weight: 800; font-size: 0.95rem; }
+    .achievement-row .ach-desc { color: #8fa0c0; font-weight: 600; font-size: 0.78rem; margin-top: 1px; }
+    .achievement-row .ach-check { margin-left: auto; font-size: 1.3rem; color: #38ef7d; flex-shrink: 0; }
+
+    .daily-reward-card {
+      background: #141824;
+      border: 3px solid #38ef7d;
+      box-shadow: 0 0 40px rgba(56, 239, 125, 0.4);
+      border-radius: 28px;
+      padding: 30px 28px;
+      width: 88%;
+      max-width: 360px;
+      text-align: center;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #daily-reward-modal-overlay.active .daily-reward-card { transform: scale(1); }
+    .streak-flame-row { display: flex; justify-content: center; gap: 6px; margin: 16px 0; flex-wrap: wrap; }
+    .streak-day-pill {
+      width: 42px; height: 52px;
+      border-radius: 10px;
+      background: #1d2334;
+      border: 2px solid #2d364f;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: #7d8ea7; font-weight: 800; font-size: 0.7rem;
+    }
+    .streak-day-pill.done { background: rgba(56, 239, 125, 0.15); border-color: #38ef7d; color: #38ef7d; }
+    .streak-day-pill.today { border-color: #ffca28; background: rgba(255, 202, 40, 0.15); color: #ffca28; box-shadow: 0 0 14px rgba(255,202,40,0.4); }
+
+    /* ============================================================
+       JUICE FX — extra motion-design layer for feel & retention
+       ============================================================ */
+
+    /* Idle "come tap me" breathing pulse on primary CTA buttons */
+    @keyframes ctaBreathe {
+      0%, 100% { transform: translateY(0) scale(1); box-shadow: 0 8px 0 rgba(0,0,0,0.35), 0 12px 20px rgba(0,0,0,0.25), 0 0 0 rgba(56,239,125,0); }
+      50% { transform: translateY(-3px) scale(1.025); box-shadow: 0 11px 0 rgba(0,0,0,0.35), 0 18px 28px rgba(0,0,0,0.3), 0 0 26px rgba(56,239,125,0.55); }
+    }
+    .btn-3d.cta-breathe { animation: ctaBreathe 1.7s ease-in-out infinite; }
+    .btn-3d.cta-breathe:active { animation: none; }
+
+    /* Springy overshoot press feedback (JS toggles .btn-squash on pointerdown/up) */
+    .btn-3d, .hud-btn { will-change: transform; }
+    .btn-3d.btn-squash { transform: scale(0.88) translateY(6px) !important; transition: transform 0.06s ease-out !important; }
+    @keyframes btnSpringBack {
+      0%   { transform: scale(0.88) translateY(6px); }
+      55%  { transform: scale(1.08) translateY(-3px); }
+      75%  { transform: scale(0.97) translateY(1px); }
+      100% { transform: scale(1) translateY(0); }
+    }
+    .btn-3d.btn-spring { animation: btnSpringBack 0.32s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes hudBtnSpringBack {
+      0%   { transform: scale(0.82); }
+      55%  { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+    .hud-btn.btn-spring { animation: hudBtnSpringBack 0.3s cubic-bezier(.34,1.56,.64,1); }
+
+    /* Tap ripple */
+    .juice-ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.55);
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+      animation: rippleOut 0.5s ease-out forwards;
+      z-index: 5;
+    }
+    @keyframes rippleOut {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.65; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+    }
+
+    /* Full-screen impact flash (hit-stop accent) */
+    #impact-flash {
+      position: absolute;
+      inset: 0;
+      z-index: 60;
+      background: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    /* Vignette that pulses colored on big combo/danger moments */
+    #fx-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 15;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: inset 0 0 0px rgba(255,71,87,0);
+    }
+
+    /* Coin counter juicy pop when it gains value */
+    @keyframes coinPop {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.55); }
+      60% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    .coin-pop { animation: coinPop 0.4s cubic-bezier(.34,1.56,.64,1); color: #fff700 !important; }
+
+    /* Flying coin icon travelling from world-space pickup to the HUD counter */
+    .coin-flyer {
+      position: absolute;
+      font-size: 1.1rem;
+      z-index: 70;
+      pointer-events: none;
+      filter: drop-shadow(0 0 6px rgba(255,234,0,0.9));
+      will-change: transform, opacity;
+    }
+
+    /* Star burst pop for victory stars (adds rotation wobble + shockwave ring) */
+    @keyframes starPopBounce {
+      0%   { transform: scale(0) rotate(-35deg); opacity: 0; }
+      55%  { transform: scale(1.45) rotate(12deg); opacity: 1; }
+      75%  { transform: scale(0.85) rotate(-6deg); }
+      100% { transform: scale(1.15) rotate(0deg); }
+    }
+    .victory-star-icon.earned.star-pop { animation: starPopBounce 0.55s cubic-bezier(.34,1.56,.64,1); }
+
+    .star-shock-ring {
+      position: absolute;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      border: 3px solid #ffca28;
+      transform: translate(-50%, -50%) scale(0);
+      pointer-events: none;
+      opacity: 0.9;
+      animation: starShock 0.5s ease-out forwards;
+      z-index: 1;
+    }
+    @keyframes starShock {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.9; }
+      100% { transform: translate(-50%, -50%) scale(6); opacity: 0; }
+    }
+
+    /* Level nodes cascade in when the level-select screen opens */
+    @keyframes nodePopIn {
+      0% { opacity: 0; transform: scale(0.3) translateY(14px); }
+      65% { opacity: 1; transform: scale(1.12) translateY(-3px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .level-node-wrapper.node-anim { animation: nodePopIn 0.45s cubic-bezier(.34,1.56,.64,1) backwards; }
+
+    /* Score / number count-up ticking gets a subtle glow while animating */
+    .counting-up { text-shadow: 0 0 10px currentColor; }
+
+    /* Combo HUD extra juice: colored glow ring that intensifies with streak */
+    #combo-hud.combo-hot .combo-num { animation: comboPulse 0.35s ease, comboShake 0.28s ease; }
+    @keyframes comboShake {
+      0%, 100% { transform: translateX(0) scale(1); }
+      25% { transform: translateX(-3px) scale(1.05); }
+      75% { transform: translateX(3px) scale(1.05); }
+    }
+
+    /* Toast pop gets a tiny icon bounce */
+    .toast-icon { animation: toastIconPop 0.5s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes toastIconPop {
+      0% { transform: scale(0) rotate(-20deg); }
+      60% { transform: scale(1.3) rotate(8deg); }
+      100% { transform: scale(1) rotate(0); }
+    }
   </style>
 </head>
 <body>
 
   <div id="app-container">
     <canvas id="gameCanvas"></canvas>
+    <div id="fx-vignette"></div>
+    <div id="impact-flash"></div>
+    <div id="coin-flyer-layer" style="position:absolute; inset:0; z-index:70; pointer-events:none; overflow:hidden;"></div>
+    <div id="toast-container"></div>
 
     <!-- Main Menu Screen -->
     <div id="main-menu-screen" class="screen-overlay">
       <div class="flex flex-col items-center gap-5 text-center max-w-md px-4">
         <div class="game-logo">STICKMAN HOOK</div>
-        <p class="text-white/80 text-base font-semibold drop-shadow">Swing, Dash & Flip to Victory!</p>
+        <p class="text-white/80 text-base font-semibold drop-shadow">Swing & Flip to Victory!</p>
 
         <!-- Dynamic Coin Counter Header -->
         <div class="flex gap-4 items-center bg-black/40 px-5 py-2 rounded-full border border-yellow-400/30">
           <span class="text-yellow-400 text-xl font-black">🪙 <span id="main-coins-count">0</span></span>
           <span class="text-white/30">|</span>
           <span class="text-emerald-400 text-sm font-bold">STARS: ⭐<span id="main-stars-count">0</span></span>
+          <span class="text-white/30">|</span>
+          <span class="text-orange-400 text-sm font-bold">🔥<span id="main-streak-count">0</span></span>
         </div>
         
         <!-- Action Buttons Stack -->
         <div class="flex flex-col gap-3 w-full px-4">
-          <button id="main-play-btn" class="btn-3d btn-green text-xl py-3.5">
+          <button id="main-play-btn" class="btn-3d btn-green text-xl py-3.5 cta-breathe">
             LEVEL MODE 🎯
           </button>
           <div class="flex gap-3 w-full">
@@ -587,9 +897,14 @@
               LEVEL SELECT 🗺️
             </button>
           </div>
-          <button id="main-settings-btn" class="btn-3d btn-purple text-sm py-2.5">
-            SETTINGS ⚙️
-          </button>
+          <div class="flex gap-3 w-full">
+            <button id="main-achievements-btn" class="btn-3d btn-gold text-sm flex-1 py-2.5">
+              TROPHIES 🏆
+            </button>
+            <button id="main-settings-btn" class="btn-3d btn-purple text-sm flex-1 py-2.5">
+              SETTINGS ⚙️
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -714,6 +1029,29 @@
       </div>
     </div>
 
+    <!-- Achievements / Trophies Modal -->
+    <div id="achievements-modal-overlay">
+      <div class="achievements-card">
+        <div class="modal-header">
+          <div class="title" style="color:#ffca28;">TROPHIES</div>
+          <div class="stats-line" id="achievements-progress-text">0 / 0 Unlocked</div>
+          <button class="close-btn" id="achievements-close-btn">✕</button>
+        </div>
+        <div class="achievements-list" id="achievements-list-container"></div>
+      </div>
+    </div>
+
+    <!-- Daily Reward Modal -->
+    <div id="daily-reward-modal-overlay">
+      <div class="daily-reward-card">
+        <div class="game-logo" style="font-size:1.6rem;">DAILY BONUS!</div>
+        <p class="text-white/70 text-sm font-semibold mt-1" id="daily-reward-streak-text">Day 1 Streak 🔥</p>
+        <div class="streak-flame-row" id="daily-reward-strip"></div>
+        <div class="text-yellow-400 text-2xl font-black mb-4" id="daily-reward-amount-text">+5 🪙</div>
+        <button id="daily-reward-claim-btn" class="btn-3d btn-green text-base py-3 w-full">CLAIM REWARD</button>
+      </div>
+    </div>
+
     <!-- HUD Layer -->
     <div id="hud-layer" style="display: none;">
       <button class="hud-btn" id="hud-restart-btn" title="Restart Level">
@@ -734,6 +1072,12 @@
         <span id="hud-mode-label">DIST:</span> <span id="hud-mode-val" class="text-cyan-400">0m</span>
       </div>
 
+      <!-- Combo Multiplier Indicator -->
+      <div id="combo-hud">
+        <div class="combo-num" id="combo-hud-num">x1</div>
+        <div class="combo-lbl" id="combo-hud-lbl">COMBO</div>
+      </div>
+
       <div class="hud-controls-group">
         <div class="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full text-yellow-400 font-black text-sm border border-yellow-400/30 flex items-center">
           🪙 <span id="hud-coins-val" class="ml-1">0</span>
@@ -744,7 +1088,7 @@
       </div>
     </div>
 
-    <div id="game-instruction" style="display: none;">HOLD MOUSE / SPACE TO HOOK</div>
+    <div id="game-instruction" style="display: none;">HOLD TO SWING & RELEASE TO LAUNCH</div>
   </div>
 
 <script>
@@ -831,6 +1175,7 @@
   let DPR = Math.min(window.devicePixelRatio || 1, 2);
   let W = 0, H = 0;
 
+  // Game Modes & Persistence
   let gameMode = "LEVELS";
   let currentLevelIdx = 0;
   let selectedLevelIdx = 0;
@@ -841,6 +1186,34 @@
   let difficulty = localStorage.getItem('sh_difficulty') || 'HARD';
   let endlessHighScore = parseInt(localStorage.getItem('sh_endless_hs') || '0', 10);
 
+  // Retention & Meta-progression Data
+  let lifetimeCoins = parseInt(localStorage.getItem('sh_lifetime_coins') || '0', 10);
+  let lifetimeFlips = parseInt(localStorage.getItem('sh_lifetime_flips') || '0', 10);
+  let lifetimePerfects = parseInt(localStorage.getItem('sh_lifetime_perfects') || '0', 10);
+  let bestCombo = parseInt(localStorage.getItem('sh_best_combo') || '0', 10);
+  let loginStreak = parseInt(localStorage.getItem('sh_streak') || '0', 10);
+  let lastPlayedDate = localStorage.getItem('sh_last_played') || '';
+  let unlockedAchievements = JSON.parse(localStorage.getItem('sh_achievements') || '[]');
+
+  const ACHIEVEMENTS_CATALOG = [
+    { id: 'first_flip', icon: '🤸', name: 'First Flip', desc: 'Land your very first mid-air flip.', reward: 10, check: s => s.lifetimeFlips >= 1 },
+    { id: 'flip_apprentice', icon: '🌀', name: 'Flip Apprentice', desc: 'Land 25 flips total.', reward: 20, check: s => s.lifetimeFlips >= 25 },
+    { id: 'flip_master', icon: '🎡', name: 'Flip Master', desc: 'Land 100 flips total.', reward: 50, check: s => s.lifetimeFlips >= 100 },
+    { id: 'coin_collector', icon: '🪙', name: 'Coin Collector', desc: 'Collect 100 coins in total.', reward: 20, check: s => s.lifetimeCoins >= 100 },
+    { id: 'coin_hoarder', icon: '💰', name: 'Coin Hoarder', desc: 'Collect 500 coins in total.', reward: 60, check: s => s.lifetimeCoins >= 500 },
+    { id: 'combo_5', icon: '⚡', name: 'Getting Swingy', desc: 'Reach a combo of 5 swings.', reward: 15, check: s => s.bestCombo >= 5 },
+    { id: 'combo_15', icon: '🔥', name: 'Combo King', desc: 'Reach a combo of 15 swings.', reward: 50, check: s => s.bestCombo >= 15 },
+    { id: 'perfect_10', icon: '✨', name: 'Perfectionist', desc: 'Land 10 Perfect Swing releases.', reward: 30, check: s => s.lifetimePerfects >= 10 },
+    { id: 'level_5', icon: '🗺️', name: 'Explorer', desc: 'Clear Level 5.', reward: 20, check: s => s.maxUnlockedLevel >= 5 },
+    { id: 'level_25', icon: '🏔️', name: 'Trailblazer', desc: 'Clear Level 25.', reward: 60, check: s => s.maxUnlockedLevel >= 25 },
+    { id: 'level_50', icon: '👑', name: 'Champion', desc: 'Clear all 50 levels.', reward: 150, check: s => s.maxUnlockedLevel >= 50 },
+    { id: 'endless_500', icon: '♾️', name: 'Long Hauler', desc: 'Reach 500m in Endless mode.', reward: 40, check: s => s.endlessHighScore >= 500 },
+    { id: 'endless_2000', icon: '🚀', name: 'Marathoner', desc: 'Reach 2000m in Endless mode.', reward: 100, check: s => s.endlessHighScore >= 2000 },
+    { id: 'fashionista', icon: '👕', name: 'Fashionista', desc: 'Own 3 different skins.', reward: 25, check: s => s.unlockedSkinsCount >= 3 },
+    { id: 'week_streak', icon: '📅', name: 'Dedicated', desc: 'Reach a 7-day login streak.', reward: 70, check: s => s.loginStreak >= 7 }
+  ];
+
+  // Shop Data
   let unlockedSkins = JSON.parse(localStorage.getItem('sh_unlocked_skins') || '["classic"]');
   let equippedSkin = localStorage.getItem('sh_equipped_skin') || 'classic';
   let unlockedTrails = JSON.parse(localStorage.getItem('sh_unlocked_trails') || '["default"]');
@@ -868,6 +1241,7 @@
   let animTime = 0;
   let ringRotation = 0;
 
+  // Level & Physics Entities
   let levelLength = 2400;
   let startPos = { x: 120, y: 300 };
   let finishX = 2200;
@@ -882,6 +1256,7 @@
   let particles = [];
   let floatingTexts = [];
 
+  // Dynamic Camera & Juices
   let cameraX = 0;
   let cameraZoom = 1.0;
   let targetCameraZoom = 1.0;
@@ -894,6 +1269,14 @@
   let airRotations = 0;
   let totalFlipsInLevel = 0;
   let levelCoinsEarned = 0;
+
+  // Combo / Skill-Chain System
+  let swingCombo = 0;
+  let comboMultiplier = 1;
+  let comboDecayTimer = 0;
+  const COMBO_DECAY_TIME = 3.2;
+
+  // Time Attack Tracker
   let timeAttackTimer = 0;
   const TIME_ATTACK_TARGET_TIME = 15.0;
 
@@ -909,9 +1292,194 @@
     angularVelocity: 0,
     bodyAngle: 0,
     squashX: 1, squashY: 1,
+    popFlash: 0,
     trail: []
   };
 
+  // ============================================================
+  // JUICE FX MODULE — hit-stop, camera punch, flying coins,
+  // count-up numbers, button spring feedback, speed lines, flashes
+  // ============================================================
+  const fxVignette = document.getElementById("fx-vignette");
+  const impactFlash = document.getElementById("impact-flash");
+  const coinFlyerLayer = document.getElementById("coin-flyer-layer");
+
+  let hitStopTimer = 0;          // while > 0, physics dt is frozen (real time still ticks the timer down)
+  let cameraShakeMag = 0;        // legacy alias kept in sync with screenShake for punch kicks
+  let cameraKickZoom = 0;        // extra transient zoom punch added on top of speed-zoom
+  let cameraTilt = 0;            // subtle rotational shake
+  let speedLines = [];           // streaks that appear at high velocity
+
+  function hitStop(ms) {
+    hitStopTimer = Math.max(hitStopTimer, ms / 1000);
+  }
+
+  function flashScreen(color, peakOpacity, duration) {
+    impactFlash.style.background = color;
+    impactFlash.style.transition = "none";
+    impactFlash.style.opacity = String(peakOpacity);
+    // force reflow so the transition below actually animates from peakOpacity -> 0
+    void impactFlash.offsetWidth;
+    impactFlash.style.transition = `opacity ${duration}s ease-out`;
+    impactFlash.style.opacity = "0";
+  }
+
+  function pulseVignette(color, duration) {
+    fxVignette.style.transition = "none";
+    fxVignette.style.boxShadow = `inset 0 0 140px 40px ${color}`;
+    fxVignette.style.opacity = "1";
+    void fxVignette.offsetWidth;
+    fxVignette.style.transition = `opacity ${duration}s ease-out`;
+    fxVignette.style.opacity = "0";
+  }
+
+  function cameraPunch(amount) {
+    cameraKickZoom = Math.min(0.22, cameraKickZoom + amount);
+  }
+
+  function shakeCamera(amount, tilt) {
+    screenShake = Math.max(screenShake, amount);
+    cameraTilt = Math.max(cameraTilt, tilt || 0);
+  }
+
+  // --- Number count-up ticker: animates a DOM element's textContent from its
+  // current numeric value up to `to`, with a satisfying pop at the end.
+  const activeCounters = new WeakMap();
+  function animateCounterTo(el, to, opts) {
+    if (!el) return;
+    opts = opts || {};
+    let duration = opts.duration || 500;
+    let prefix = opts.prefix || "";
+    let suffix = opts.suffix || "";
+    let from = parseInt((el.textContent || "0").replace(/[^\d-]/g, ""), 10);
+    if (isNaN(from)) from = 0;
+    if (from === to) return;
+
+    if (activeCounters.has(el)) cancelAnimationFrame(activeCounters.get(el));
+    let start = performance.now();
+    el.classList.add("counting-up");
+
+    function tick(now) {
+      let t = Math.min(1, (now - start) / duration);
+      let eased = 1 - Math.pow(1 - t, 3);
+      let val = Math.round(from + (to - from) * eased);
+      el.textContent = prefix + val.toLocaleString() + suffix;
+      if (t < 1) {
+        activeCounters.set(el, requestAnimationFrame(tick));
+      } else {
+        el.textContent = prefix + to.toLocaleString() + suffix;
+        el.classList.remove("counting-up");
+        el.classList.remove("coin-pop");
+        void el.offsetWidth;
+        el.classList.add("coin-pop");
+        setTimeout(() => el.classList.remove("coin-pop"), 420);
+      }
+    }
+    activeCounters.set(el, requestAnimationFrame(tick));
+  }
+
+  // --- Flying coin: spawns a DOM coin icon at a world position and animates
+  // it arcing toward the HUD coin badge before bumping the counter.
+  function flyCoinToHud(worldX, worldY, amount) {
+    const targetEl = document.getElementById("hud-coins-val");
+    if (!targetEl || !hudCoinsVal) return;
+    const badgeRect = targetEl.getBoundingClientRect();
+    // Convert world-space (camera relative) position to on-screen CSS pixels — mirrors the draw() transform chain
+    const screenX = (worldX - cameraX) * cameraZoom;
+    const screenY = worldY * cameraZoom;
+
+    const el = document.createElement("div");
+    el.className = "coin-flyer";
+    el.textContent = "🪙";
+    el.style.left = screenX + "px";
+    el.style.top = screenY + "px";
+    coinFlyerLayer.appendChild(el);
+
+    const dx = badgeRect.left + badgeRect.width / 2 - screenX;
+    const dy = badgeRect.top + badgeRect.height / 2 - screenY;
+    const dur = 480 + Math.random() * 120;
+    const arcLift = -60 - Math.random() * 40;
+
+    let start = performance.now();
+    function step(now) {
+      let t = Math.min(1, (now - start) / dur);
+      let e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; // easeInOutCubic
+      let curX = dx * e;
+      let curY = dy * e + Math.sin(t * Math.PI) * arcLift;
+      let scale = 1 - 0.35 * t;
+      el.style.transform = `translate(${curX}px, ${curY}px) scale(${scale})`;
+      el.style.opacity = String(1 - Math.max(0, t - 0.7) / 0.3);
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.remove();
+        pendingCoinBump += amount;
+        if (!coinBumpQueued) {
+          coinBumpQueued = true;
+          requestAnimationFrame(() => {
+            animateCounterTo(hudCoinsVal, coinsCount);
+            animateCounterTo(mainCoinsCount, coinsCount);
+            animateCounterTo(shopCoinsText, coinsCount);
+            pendingCoinBump = 0;
+            coinBumpQueued = false;
+          });
+        }
+      }
+    }
+    requestAnimationFrame(step);
+  }
+  let pendingCoinBump = 0;
+  let coinBumpQueued = false;
+
+  // --- Springy tap feedback for every 3D / HUD button, plus a tap ripple.
+  function addButtonJuice(el) {
+    if (!el || el.dataset.juiced) return;
+    el.dataset.juiced = "1";
+    el.style.position = el.style.position || "relative";
+    el.style.overflow = "hidden";
+
+    const press = (ev) => {
+      el.classList.remove("btn-spring");
+      el.classList.add("btn-squash");
+
+      const rect = el.getBoundingClientRect();
+      const pt = ev.touches ? ev.touches[0] : ev;
+      const rx = (pt ? pt.clientX : rect.left + rect.width / 2) - rect.left;
+      const ry = (pt ? pt.clientY : rect.top + rect.height / 2) - rect.top;
+      const ripple = document.createElement("span");
+      ripple.className = "juice-ripple";
+      const size = Math.max(rect.width, rect.height) * 1.4;
+      ripple.style.width = size + "px";
+      ripple.style.height = size + "px";
+      ripple.style.left = rx + "px";
+      ripple.style.top = ry + "px";
+      el.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 520);
+    };
+    const release = () => {
+      el.classList.remove("btn-squash");
+      el.classList.add("btn-spring");
+      setTimeout(() => el.classList.remove("btn-spring"), 340);
+    };
+
+    el.addEventListener("pointerdown", press);
+    el.addEventListener("pointerup", release);
+    el.addEventListener("pointerleave", release);
+    el.addEventListener("pointercancel", release);
+  }
+
+  function juiceAllButtons(root) {
+    (root || document).querySelectorAll(".btn-3d, .hud-btn").forEach(addButtonJuice);
+  }
+
+  // Re-scan for buttons every time we (re)build dynamic UI (shop, achievements, etc.)
+  const juiceObserver = new MutationObserver(() => juiceAllButtons(document));
+  juiceObserver.observe(document.body, { childList: true, subtree: true });
+  // ============================================================
+  // END JUICE FX MODULE (continued further below near draw/update)
+  // ============================================================
+
+  // UI Element References
   const mainMenuScreen = document.getElementById("main-menu-screen");
   const levelSelectScreen = document.getElementById("level-select-screen");
   const settingsModalOverlay = document.getElementById("settings-modal-overlay");
@@ -966,6 +1534,13 @@
   const hudRestartBtn = document.getElementById("hud-restart-btn");
   const hudMenuBtn = document.getElementById("hud-menu-btn");
 
+  const mainAchievementsBtn = document.getElementById("main-achievements-btn");
+  const mainStreakCount = document.getElementById("main-streak-count");
+  const achievementsModalOverlay = document.getElementById("achievements-modal-overlay");
+  const achievementsCloseBtn = document.getElementById("achievements-close-btn");
+  const dailyRewardModalOverlay = document.getElementById("daily-reward-modal-overlay");
+  const dailyRewardClaimBtn = document.getElementById("daily-reward-claim-btn");
+
   function resizeCanvas() {
     W = window.innerWidth; H = window.innerHeight;
     canvas.width = Math.floor(W * DPR);
@@ -986,6 +1561,137 @@
     localStorage.setItem('sh_equipped_skin', equippedSkin);
     localStorage.setItem('sh_unlocked_trails', JSON.stringify(unlockedTrails));
     localStorage.setItem('sh_equipped_trail', equippedTrail);
+    localStorage.setItem('sh_lifetime_coins', lifetimeCoins.toString());
+    localStorage.setItem('sh_lifetime_flips', lifetimeFlips.toString());
+    localStorage.setItem('sh_lifetime_perfects', lifetimePerfects.toString());
+    localStorage.setItem('sh_best_combo', bestCombo.toString());
+    localStorage.setItem('sh_streak', loginStreak.toString());
+    localStorage.setItem('sh_last_played', lastPlayedDate);
+    localStorage.setItem('sh_achievements', JSON.stringify(unlockedAchievements));
+  }
+
+  function vibrate(pattern) {
+    if (navigator.vibrate) {
+      try { navigator.vibrate(pattern); } catch (e) {}
+    }
+  }
+
+  function showToast(icon, title, desc) {
+    const toastContainer = document.getElementById("toast-container");
+    const card = document.createElement("div");
+    card.className = "toast-card";
+    card.innerHTML = `<div class="toast-icon">${icon}</div><div><div class="toast-text-title">${title}</div><div class="toast-text-desc">${desc}</div></div>`;
+    toastContainer.appendChild(card);
+    setTimeout(() => card.remove(), 3100);
+  }
+
+  function checkAchievements() {
+    const stats = {
+      lifetimeFlips, lifetimeCoins, lifetimePerfects, bestCombo,
+      maxUnlockedLevel, endlessHighScore, loginStreak,
+      unlockedSkinsCount: unlockedSkins.length
+    };
+    let unlockedNew = false;
+    for (const ach of ACHIEVEMENTS_CATALOG) {
+      if (!unlockedAchievements.includes(ach.id) && ach.check(stats)) {
+        unlockedAchievements.push(ach.id);
+        coinsCount += ach.reward;
+        unlockedNew = true;
+        vibrate([40, 60, 40]);
+        playSound('win', 1.4);
+        showToast(ach.icon, `TROPHY: ${ach.name}`, `${ach.desc} (+${ach.reward} 🪙)`);
+      }
+    }
+    if (unlockedNew) { saveProgress(); updateGlobalStatsUI(); }
+  }
+
+  function renderAchievementsGrid() {
+    const listEl = document.getElementById("achievements-list-container");
+    const progressEl = document.getElementById("achievements-progress-text");
+    listEl.innerHTML = "";
+    progressEl.textContent = `${unlockedAchievements.length} / ${ACHIEVEMENTS_CATALOG.length} Unlocked`;
+    ACHIEVEMENTS_CATALOG.forEach(ach => {
+      const isUnlocked = unlockedAchievements.includes(ach.id);
+      const row = document.createElement("div");
+      row.className = "achievement-row" + (isUnlocked ? " unlocked" : "");
+      row.innerHTML = `<div class="ach-icon">${ach.icon}</div>
+        <div><div class="ach-name">${ach.name}</div><div class="ach-desc">${ach.desc} • Reward: ${ach.reward} 🪙</div></div>
+        <div class="ach-check">${isUnlocked ? "✓" : "🔒"}</div>`;
+      listEl.appendChild(row);
+    });
+  }
+
+  function checkDailyLogin() {
+    const todayStr = new Date().toDateString();
+    if (lastPlayedDate === todayStr) return;
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (lastPlayedDate === yesterday.toDateString()) {
+      loginStreak++;
+    } else {
+      loginStreak = 1;
+    }
+    lastPlayedDate = todayStr;
+
+    const dayInCycle = ((loginStreak - 1) % 7) + 1;
+    const reward = 5 + dayInCycle * 3;
+    coinsCount += reward;
+    lifetimeCoins += reward;
+
+    saveProgress();
+    updateGlobalStatsUI();
+    checkAchievements();
+
+    document.getElementById("daily-reward-streak-text").textContent = `Day ${dayInCycle} of your streak 🔥 ${loginStreak} total`;
+    document.getElementById("daily-reward-amount-text").textContent = `+${reward} 🪙`;
+
+    const stripEl = document.getElementById("daily-reward-strip");
+    stripEl.innerHTML = "";
+    for (let d = 1; d <= 7; d++) {
+      const pill = document.createElement("div");
+      pill.className = "streak-day-pill" + (d < dayInCycle ? " done" : "") + (d === dayInCycle ? " today" : "");
+      pill.innerHTML = `<span>Day</span><span>${d}</span>`;
+      stripEl.appendChild(pill);
+    }
+
+    setTimeout(() => {
+      document.getElementById("daily-reward-modal-overlay").classList.add("active");
+    }, 500);
+  }
+
+  function updateComboMultiplier() {
+    comboMultiplier = 1 + Math.min(2.0, Math.floor(swingCombo / 3) * 0.25);
+    const comboHud = document.getElementById("combo-hud");
+    const comboHudNum = document.getElementById("combo-hud-num");
+    comboHud.classList.toggle("combo-hot", comboMultiplier >= 1.75);
+    if (swingCombo > 0 && swingCombo % 5 === 0) {
+      shakeCamera(2.5, 1);
+      cameraPunch(0.015);
+      pulseVignette("rgba(255,234,0,0.35)", 0.5);
+    }
+    if (swingCombo >= 2) {
+      comboHud.style.display = "flex";
+      comboHudNum.textContent = `x${comboMultiplier.toFixed(2).replace(/\.?0+$/, '')}`;
+      comboHudNum.style.animation = "none";
+      void comboHudNum.offsetWidth;
+      comboHudNum.style.animation = "comboPulse 0.35s ease";
+    } else {
+      comboHud.style.display = "none";
+    }
+    if (swingCombo > bestCombo) {
+      bestCombo = swingCombo;
+      checkAchievements();
+    }
+  }
+
+  function resetCombo() {
+    swingCombo = 0;
+    comboMultiplier = 1;
+    comboDecayTimer = 0;
+    const comboHud = document.getElementById("combo-hud");
+    comboHud.style.display = "none";
+    comboHud.classList.remove("combo-hot");
   }
 
   function updateGlobalStatsUI() {
@@ -996,6 +1702,7 @@
     shopCoinsText.textContent = coinsCount;
     hudCoinsVal.textContent = coinsCount;
     modalStatsText.textContent = `Unlocked: Level ${maxUnlockedLevel + 1} / 50 • Stars: ⭐${totalStars}`;
+    mainStreakCount.textContent = loginStreak;
   }
 
   function updateDifficultyUI() {
@@ -1103,7 +1810,8 @@
       let isCurrent = i === selectedLevelIdx;
 
       let wrapper = document.createElement("div");
-      wrapper.className = "level-node-wrapper";
+      wrapper.className = "level-node-wrapper node-anim";
+      wrapper.style.animationDelay = ((i - startLvl) * 0.035) + "s";
 
       let circle = document.createElement("div");
       circle.className = "level-circle " + (isCurrent && isUnlocked ? "current-node" : (isUnlocked ? "unlocked-node" : "locked-node"));
@@ -1170,6 +1878,9 @@
   mainShopBtn.onclick = openShopScreen;
   mainLevelsBtn.onclick = openLevelSelectScreen;
   mainSettingsBtn.onclick = () => { settingsModalOverlay.classList.add("active"); updateDifficultyUI(); };
+  mainAchievementsBtn.onclick = () => { renderAchievementsGrid(); achievementsModalOverlay.classList.add("active"); };
+  achievementsCloseBtn.onclick = () => achievementsModalOverlay.classList.remove("active");
+  dailyRewardClaimBtn.onclick = () => dailyRewardModalOverlay.classList.remove("active");
 
   modalCloseBtn.onclick = openHomeScreen;
   modalPlayBtn.onclick = () => startLevel("LEVELS", selectedLevelIdx);
@@ -1207,6 +1918,7 @@
     particles = []; floatingTexts = [];
     lastAttachedHook = null; detachCooldown = 0; airRotations = 0; totalFlipsInLevel = 0; levelCoinsEarned = 0;
     screenShake = 0; cameraZoom = 1.0; targetCameraZoom = 1.0; slowMoFactor = 1.0; slowMoTimer = 0;
+    resetCombo();
     timeAttackTimer = 0;
 
     levelLength = mode === "ENDLESS" ? 999999 : (2800 + levelIdx * 500);
@@ -1246,7 +1958,7 @@
         coins.push({ x: currX - spacing * 0.3, y: hookY + 130, collected: false });
       }
 
-      // Detailed Breakable Glass Barriers (HARD mode only)
+      // Breakable Glass Barriers (HARD mode only)
       if (difficulty === "HARD" && Math.random() < 0.25 && currX < limitX - 300) {
         glassBarriers.push({ x: currX + 40, y: hookY + 80, w: 22, h: 125, hit: false });
       }
@@ -1265,6 +1977,7 @@
 
     trampolines.unshift({ x: startPos.x - 40, y: startPos.y + 110, w: 120, h: 18, squish: 0 });
 
+    // HUD Setup
     if (mode === "LEVELS") {
       hudProgressContainer.style.display = "flex";
       hudModeCounter.classList.add("hidden");
@@ -1294,8 +2007,7 @@
     for (const h of hooks) {
       let dx = h.x - player.x; let dy = h.y - player.y;
       let dist = Math.hypot(dx, dy);
-      // Allow hooks ahead OR directly above/slightly behind (-120px to +550px)
-      if (dx > -120 && dist < 550 && dist < minDistance) {
+      if (dx > -120 && dx < 600 && dist < 520 && dist < minDistance) {
         minDistance = dist; best = h;
       }
     }
@@ -1315,19 +2027,45 @@
     player.ropeLength = rope; player.angle = angle;
     player.angularVelocity = angVel; lastAttachedHook = target;
 
-    spawnParticles(player.x, player.y, "#ffffff", 10);
+    swingCombo++;
+    comboDecayTimer = COMBO_DECAY_TIME;
+    updateComboMultiplier();
+
+    // Snappy anticipation pop on grab — decays smoothly in update(), read by drawCustomCharacter
+    player.popFlash = 1.0;
+
+    spawnParticles(player.x, player.y, "#ffffff", 8 + Math.min(14, swingCombo));
+    cameraPunch(0.02 + Math.min(0.05, swingCombo * 0.004));
     playSound('hook');
+    vibrate(12);
   }
 
   function detachHook() {
     if (!player.attached) return;
     let a = player.angle; let av = player.angularVelocity; let r = player.ropeLength;
 
-    player.vx = r * Math.cos(a) * av * 1.08;
-    player.vy = -r * Math.sin(a) * av * 1.08;
+    // Perfect Swing bonus: releasing near the bottom of the arc at high speed
+    // rewards a small velocity boost and combo credit - a skill-based timing mechanic.
+    let isPerfect = Math.abs(a) < 0.32 && Math.abs(av) * r > 480;
+    let boost = isPerfect ? 1.14 : 1.0;
 
-    player.attached = false; player.anchor = null; 
-    detachCooldown = 0.15; // Set brief cooldown so release feels responsive while allowing re-hooking below
+    player.vx = r * Math.cos(a) * av * boost * 1.08;
+    player.vy = -r * Math.sin(a) * av * boost * 1.08;
+
+    if (isPerfect) {
+      lifetimePerfects++;
+      spawnFloatingText(player.x, player.y - 30, "PERFECT SWING!", "#ffea00");
+      spawnParticles(player.x, player.y, "#ffea00", 18);
+      shakeCamera(5, 3);
+      cameraPunch(0.06);
+      hitStop(45);
+      flashScreen("#ffea00", 0.18, 0.22);
+      playSound('dash', 1.2);
+      vibrate([15, 30, 15]);
+      checkAchievements();
+    }
+
+    player.attached = false; player.anchor = null; detachCooldown = 0.08;
     airRotations = 0;
   }
 
@@ -1335,11 +2073,25 @@
     floatingTexts.push({ x: x, y: y, text: text, color: color, life: 1.0, vy: -40 });
   }
 
+  function popStarWithShock(starEl) {
+    starEl.classList.add("earned", "star-pop");
+    const rect = starEl.getBoundingClientRect();
+    const ring = document.createElement("div");
+    ring.className = "star-shock-ring";
+    ring.style.left = (rect.left + rect.width / 2) + "px";
+    ring.style.top = (rect.top + rect.height / 2) + "px";
+    document.body.appendChild(ring);
+    setTimeout(() => ring.remove(), 520);
+    setTimeout(() => starEl.classList.remove("star-pop"), 560);
+  }
+
   function triggerSlowMoVictory(stars, flips) {
     appState = "WIN";
     slowMoFactor = 0.2;
     slowMoTimer = 1.2;
 
+    hitStop(80);
+    flashScreen("#ffffff", 0.4, 0.4);
     playSound('win');
     spawnConfetti();
 
@@ -1348,24 +2100,33 @@
       const s1 = document.getElementById("v-star-1");
       const s2 = document.getElementById("v-star-2");
       const s3 = document.getElementById("v-star-3");
-      s1.classList.remove("earned"); s2.classList.remove("earned"); s3.classList.remove("earned");
+      s1.classList.remove("earned", "star-pop"); s2.classList.remove("earned", "star-pop"); s3.classList.remove("earned", "star-pop");
 
-      setTimeout(() => { if (stars >= 1) s1.classList.add("earned"); }, 150);
-      setTimeout(() => { if (stars >= 2) s2.classList.add("earned"); }, 350);
-      setTimeout(() => { if (stars >= 3) s3.classList.add("earned"); }, 550);
+      setTimeout(() => { if (stars >= 1) { popStarWithShock(s1); vibrate(20); playSound('coin'); } }, 150);
+      setTimeout(() => { if (stars >= 2) { popStarWithShock(s2); vibrate(20); playSound('coin'); } }, 350);
+      setTimeout(() => { if (stars >= 3) { popStarWithShock(s3); vibrate([20, 20, 40]); playSound('coin', 1.3); } }, 550);
 
       document.getElementById("victory-title").textContent = gameMode === "TIME ATTACK" ? "COURSE CLEARED!" : "LEVEL COMPLETED!";
       document.getElementById("victory-flips-text").textContent = `Flips: ${flips} • Coins: +${levelCoinsEarned}`;
-      document.getElementById("victory-score-text").textContent = `SCORE: ${(1000 + flips * 250 + levelCoinsEarned * 50).toLocaleString()}`;
+      const scoreEl = document.getElementById("victory-score-text");
+      const finalScore = 1000 + flips * 250 + levelCoinsEarned * 50;
+      scoreEl.textContent = "SCORE: 0";
+      setTimeout(() => animateCounterTo(scoreEl, finalScore, { duration: 900, prefix: "SCORE: " }), 150);
     }, 800);
   }
 
   function triggerPlayerDeath() {
     if (appState === "DEAD" || appState === "WIN") return;
-    screenShake = 14;
+    shakeCamera(14, 6);
+    hitStop(70);
+    flashScreen("#ff4757", 0.3, 0.35);
+    pulseVignette("rgba(255,71,87,0.55)", 0.6);
     spawnParticles(player.x, player.y, "#ff4444", 30);
     playSound('fail');
+    vibrate([30, 40, 30]);
     appState = "DEAD";
+    resetCombo();
+    saveProgress();
 
     if (gameMode === "ENDLESS") {
       let finalDist = Math.max(0, Math.floor((player.x - startPos.x) / 10));
@@ -1374,6 +2135,7 @@
         endlessHighScore = finalDist;
         saveProgress();
       }
+      checkAchievements();
       let totalScore = finalDist * 10 + totalFlipsInLevel * 250 + levelCoinsEarned * 50;
 
       setTimeout(() => {
@@ -1387,16 +2149,25 @@
   }
 
   function showEndlessSummary(dist, score, flips, coins, isNewHigh) {
-    document.getElementById("summary-distance-text").textContent = `${dist}m`;
-    document.getElementById("summary-score-text").textContent = score.toLocaleString();
+    const distEl = document.getElementById("summary-distance-text");
+    const scoreEl = document.getElementById("summary-score-text");
+    distEl.textContent = "0m";
+    scoreEl.textContent = "0";
     document.getElementById("summary-flips-text").textContent = flips;
     document.getElementById("summary-coins-text").textContent = `+${coins} 🪙`;
     document.getElementById("summary-best-text").textContent = `${endlessHighScore}m`;
+
+    setTimeout(() => {
+      animateCounterTo(distEl, dist, { duration: 700, suffix: "m" });
+      animateCounterTo(scoreEl, score, { duration: 900 });
+    }, 120);
 
     const badge = document.getElementById("endless-highscore-badge");
     if (isNewHigh) {
       badge.classList.remove("hidden");
       playSound('win');
+      hitStop(60);
+      flashScreen("#ffea00", 0.3, 0.35);
       spawnConfetti();
     } else {
       badge.classList.add("hidden");
@@ -1443,12 +2214,17 @@
   window.addEventListener("pointerdown", handleInputDown);
   window.addEventListener("pointerup", handleInputUp);
   window.addEventListener("keydown", (e) => {
-    if (e.code === "Space") { e.preventDefault(); if (!isPointerDown) handleInputDown(); }
+    if (e.code === "Space") { 
+      e.preventDefault(); 
+      if (!isPointerDown) {
+        handleInputDown();
+      }
+    }
   });
   window.addEventListener("keyup", (e) => { if (e.code === "Space") handleInputUp(); });
 
   const FIXED_DT = 1 / 120;
-  let accumTime = 0;
+  let accumTime = 0; let lastTime = performance.now();
 
   function stepPhysics(dt) {
     if (appState !== "PLAYING") return;
@@ -1460,6 +2236,7 @@
 
     if (player.attached) {
       let r = player.ropeLength;
+
       let angAcc = -(GRAVITY / r) * Math.sin(player.angle);
       player.angularVelocity += angAcc * dt;
       player.angularVelocity *= 0.9994;
@@ -1475,8 +2252,6 @@
       let speed = Math.hypot(player.vx, player.vy);
       let stretch = Math.min(1.4, 1 + speed / 1600);
       player.squashX = stretch; player.squashY = 1 / stretch;
-
-      if (!isPointerDown) detachHook();
     } else {
       player.vy += GRAVITY * dt;
       player.x += player.vx * dt;
@@ -1495,8 +2270,11 @@
       if (airRotations >= Math.PI * 2) {
         airRotations -= Math.PI * 2;
         totalFlipsInLevel++;
+        lifetimeFlips++;
         spawnFloatingText(player.x, player.y - 20, "FLIP! +250", "#28ef7d");
         spawnParticles(player.x, player.y, "#28ef7d", 8);
+        vibrate(10);
+        checkAchievements();
       }
 
       let stretch = Math.min(1.35, 1 + speed / 1800);
@@ -1505,38 +2283,51 @@
       if (isPointerDown) attachHook();
     }
 
+    // Dynamic Trail
     player.trail.push({ x: player.x, y: player.y });
     if (player.trail.length > 12) player.trail.shift();
 
+    // Dash Rings Collision
     for (let ring of dashRings) {
       if (!ring.triggered && Math.hypot(player.x - ring.x, player.y - ring.y) < ring.radius + player.radius) {
         ring.triggered = true;
         player.vx += 520; player.vy = -180;
-        screenShake = 10;
+        shakeCamera(10, 4);
+        cameraPunch(0.09);
+        hitStop(35);
+        flashScreen("#51e2f5", 0.22, 0.25);
         playSound('dash');
         spawnParticles(ring.x, ring.y, "#51e2f5", 25);
         spawnFloatingText(player.x, player.y - 25, "DASH BOOST! ⚡", "#51e2f5");
       }
     }
 
+    // Golden Coins Collection
     for (let coin of coins) {
       if (!coin.collected && Math.hypot(player.x - coin.x, player.y - coin.y) < player.radius + 12) {
         coin.collected = true;
-        coinsCount++; levelCoinsEarned++;
-        saveProgress(); updateGlobalStatsUI();
+        let coinGain = Math.round(1 * comboMultiplier);
+        coinsCount += coinGain; levelCoinsEarned += coinGain; lifetimeCoins += coinGain;
+        saveProgress();
         playSound('coin');
+        vibrate(8);
         spawnParticles(coin.x, coin.y, "#ffea00", 12);
-        spawnFloatingText(coin.x, coin.y - 15, "+1 🪙", "#ffea00");
+        spawnFloatingText(coin.x, coin.y - 15, comboMultiplier > 1 ? `+${coinGain} 🪙 (x${comboMultiplier.toFixed(2).replace(/\.?0+$/, '')})` : "+1 🪙", "#ffea00");
+        flyCoinToHud(coin.x, coin.y, coinGain);
+        checkAchievements();
       }
     }
 
+    // Glass Shatter Mechanics
     for (let glass of glassBarriers) {
       if (!glass.hit && player.x + player.radius > glass.x && player.x - player.radius < glass.x + glass.w &&
           player.y + player.radius > glass.y && player.y - player.radius < glass.y + glass.h) {
         let speed = Math.hypot(player.vx, player.vy);
         if (speed >= 520) {
           glass.hit = true;
-          screenShake = 12;
+          shakeCamera(12, 5);
+          hitStop(60);
+          flashScreen("#ffffff", 0.35, 0.3);
           playSound('shatter');
           player.vx *= 0.92;
 
@@ -1566,6 +2357,7 @@
       }
     }
 
+    // Trampolines Bounce
     for (let t of trampolines) {
       if (t.squish > 0) t.squish = Math.max(0, t.squish - dt * 4.5);
       if (player.vy > 0 && player.x >= t.x - 12 && player.x <= t.x + t.w + 12 &&
@@ -1573,7 +2365,10 @@
         player.vy = -Math.max(820, Math.abs(player.vy) * 0.96);
         player.vx = Math.min(Math.max(player.vx * 1.06, 380), 850);
         player.y = t.y - player.radius;
-        t.squish = 1; screenShake = 6;
+        t.squish = 1;
+        shakeCamera(6, 2);
+        cameraPunch(0.04);
+        player.squashX = 1.5; player.squashY = 0.6;
         spawnParticles(player.x, t.y, "#ffffff", 16);
         spawnFloatingText(player.x, t.y - 15, "BOOST!", "#51e2f5");
         playSound('bounce');
@@ -1581,6 +2376,7 @@
       }
     }
 
+    // Hazards (Red saws)
     for (let hz of hazards) {
       if (player.x + player.radius > hz.x && player.x - player.radius < hz.x + hz.w &&
           player.y + player.radius > hz.y && player.y - player.radius < hz.y + hz.h) {
@@ -1589,10 +2385,12 @@
       }
     }
 
+    // Off-screen Fall
     if (player.y > H + 120) {
       triggerPlayerDeath();
     }
 
+    // Endless Mode Procedural Generation
     if (gameMode === "ENDLESS") {
       let currentDistance = Math.floor((player.x - startPos.x) / 10);
       hudModeVal.textContent = `${currentDistance}m`;
@@ -1609,6 +2407,7 @@
       }
     }
 
+    // Finish Line Reached
     if (gameMode !== "ENDLESS" && player.x >= finishX) {
       let earnedStars = 3;
       if (gameMode === "TIME_ATTACK" && timeAttackTimer > TIME_ATTACK_TARGET_TIME) earnedStars = 2;
@@ -1616,16 +2415,25 @@
       if (currentLevelIdx >= maxUnlockedLevel) maxUnlockedLevel = Math.min(49, currentLevelIdx + 1);
       levelStarsMap[currentLevelIdx] = Math.max(levelStarsMap[currentLevelIdx] || 0, earnedStars);
       saveProgress();
+      checkAchievements();
+      vibrate([20, 40, 20, 40, 60]);
 
       triggerSlowMoVictory(earnedStars, totalFlipsInLevel);
     }
   }
 
-  function update(dt) {
+  function update(dt, frozen) {
     animTime += dt;
     ringRotation += dt * 3.5;
     if (detachCooldown > 0) detachCooldown -= dt;
+    if (player.popFlash > 0) player.popFlash = Math.max(0, player.popFlash - dt * 6);
     if (screenShake > 0) screenShake = Math.max(0, screenShake - dt * 25);
+    if (cameraTilt > 0) cameraTilt = Math.max(0, cameraTilt - dt * 6);
+    if (cameraKickZoom > 0) cameraKickZoom = Math.max(0, cameraKickZoom - dt * 1.4);
+    if (appState === "PLAYING" && swingCombo > 0) {
+      comboDecayTimer -= dt;
+      if (comboDecayTimer <= 0) resetCombo();
+    }
     if (slowMoTimer > 0) {
       slowMoTimer -= dt;
       if (slowMoTimer <= 0) slowMoFactor = 1.0;
@@ -1639,21 +2447,34 @@
     }
 
     if (appState === "PLAYING") {
-      accumTime += dt;
-      let steps = 0;
-      while (accumTime >= FIXED_DT && steps < 4) {
-        stepPhysics(FIXED_DT);
-        accumTime -= FIXED_DT;
-        steps++;
+      if (!frozen) {
+        accumTime += dt;
+        let steps = 0;
+        while (accumTime >= FIXED_DT && steps < 4) {
+          stepPhysics(FIXED_DT);
+          accumTime -= FIXED_DT;
+          steps++;
+        }
+        if (steps >= 4) accumTime = 0;
       }
-      if (steps >= 4) accumTime = 0;
 
       let speed = Math.hypot(player.vx, player.vy);
-      targetCameraZoom = 1.0 - Math.min(0.25, Math.max(0, (speed - 400) / 1800));
+      targetCameraZoom = 1.0 - Math.min(0.25, Math.max(0, (speed - 400) / 1800)) + cameraKickZoom;
       cameraZoom += (targetCameraZoom - cameraZoom) * (1 - Math.exp(-8 * dt));
 
       let targetCamX = player.x - (W / cameraZoom) * 0.28;
       cameraX += (targetCamX - cameraX) * (1 - Math.exp(-12 * dt));
+
+      // Speed-line streaks: the faster the player moves, the more the world "smears"
+      if (speed > 900 && Math.random() < 0.6) {
+        speedLines.push({
+          x: player.x - Math.cos(Math.atan2(player.vy, player.vx)) * 10,
+          y: player.y - Math.sin(Math.atan2(player.vy, player.vx)) * 10,
+          angle: Math.atan2(player.vy, player.vx),
+          len: 20 + Math.min(70, (speed - 900) / 12),
+          life: 0.22, maxLife: 0.22
+        });
+      }
 
       if (gameMode === "LEVELS") {
         let progress = Math.min(1, Math.max(0, (player.x - startPos.x) / (finishX - startPos.x)));
@@ -1674,6 +2495,9 @@
       ft.y += ft.vy * dt; ft.life -= dt;
     }
     floatingTexts = floatingTexts.filter(ft => ft.life > 0);
+
+    for (let sl of speedLines) sl.life -= dt;
+    speedLines = speedLines.filter(sl => sl.life > 0);
   }
 
   function updateProgressBar(progress) {
@@ -1692,6 +2516,22 @@
         life: 0.4 + Math.random() * 0.4, maxLife: 0.8,
         color: color
       });
+    }
+  }
+
+  function drawSpeedLines() {
+    for (let sl of speedLines) {
+      let a = Math.max(0, sl.life / sl.maxLife) * 0.55;
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(sl.x, sl.y);
+      ctx.lineTo(sl.x - Math.cos(sl.angle) * sl.len, sl.y - Math.sin(sl.angle) * sl.len);
+      ctx.stroke();
+      ctx.restore();
     }
   }
 
@@ -1717,6 +2557,11 @@
       let ry = (Math.random() - 0.5) * screenShake;
       ctx.translate(rx, ry);
     }
+    if (cameraTilt > 0.01) {
+      ctx.translate(W / (2 * cameraZoom), H / (2 * cameraZoom));
+      ctx.rotate((Math.random() - 0.5) * cameraTilt * 0.012);
+      ctx.translate(-W / (2 * cameraZoom), -H / (2 * cameraZoom));
+    }
 
     ctx.translate(-cameraX, 0);
 
@@ -1724,10 +2569,12 @@
     drawDashRings();
     drawCoins();
     drawGlassBarriers();
+    drawSpeedLines();
     drawTrampolines();
     drawHazards();
     drawHooks();
 
+    // Swing Rope
     if (player.attached && player.anchor) {
       ctx.save();
       ctx.beginPath();
@@ -2006,6 +2853,7 @@
     let cols = 2;
 
     ctx.save();
+
     ctx.fillStyle = "#1e2436";
     ctx.fillRect(fx - (cols * squareSize) / 2 - 5, topY - 10, (cols * squareSize) + 10, botY - topY + 20);
     ctx.strokeStyle = "#51e2f5";
@@ -2074,7 +2922,9 @@
     ctx.translate(player.x, player.y);
     let rot = player.attached ? player.angle : player.bodyAngle;
     ctx.rotate(rot);
-    ctx.scale(player.squashX, player.squashY);
+    let popX = 1 - 0.3 * player.popFlash;
+    let popY = 1 + 0.38 * player.popFlash;
+    ctx.scale(player.squashX * popX, player.squashY * popY);
 
     let activeColor = SKINS_CATALOG.find(s => s.id === equippedSkin)?.color || '#ffffff';
 
@@ -2092,31 +2942,40 @@
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(0, -3); ctx.lineTo(-11, 2);
-    ctx.moveTo(0, -3); ctx.lineTo(11, 2);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(0, 8); ctx.lineTo(-8, 22);
-    ctx.moveTo(0, 8); ctx.lineTo(8, 22);
+    if (player.attached) {
+      ctx.moveTo(0, -4); ctx.lineTo(-6, -16);
+      ctx.moveTo(0, -4); ctx.lineTo(6, -16);
+    } else {
+      ctx.moveTo(0, -4); ctx.lineTo(-10, 4);
+      ctx.moveTo(0, -4); ctx.lineTo(10, 4);
+    }
+    ctx.moveTo(0, 8); ctx.lineTo(-8, 20);
+    ctx.moveTo(0, 8); ctx.lineTo(8, 20);
     ctx.stroke();
 
     ctx.restore();
   }
 
-  let lastFrameTime = performance.now();
   function gameLoop(now) {
-    let dt = (now - lastFrameTime) / 1000;
-    if (dt > 0.1) dt = 0.1;
-    lastFrameTime = now;
+    let dt = (now - lastTime) / 1000;
+    lastTime = now;
+    dt = Math.min(dt, 0.033);
 
-    update(dt);
+    if (hitStopTimer > 0) {
+      hitStopTimer -= dt;
+      // Freeze gameplay motion for a few frames but keep juice FX (camera settle, particles) alive
+      update(dt, true);
+    } else {
+      update(dt, false);
+    }
     draw();
-
     requestAnimationFrame(gameLoop);
   }
 
-  openHomeScreen();
+  juiceAllButtons(document);
+  updateGlobalStatsUI();
+  updateDifficultyUI();
+  checkDailyLogin();
   requestAnimationFrame(gameLoop);
 
 })();
